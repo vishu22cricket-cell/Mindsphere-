@@ -6,11 +6,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Upload, Youtube, FileText, ArrowRight, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import CoursePreview from "./CoursePreview";
 
 const UploadSection = () => {
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showCoursePreview, setShowCoursePreview] = useState(false);
+  const [courseTitle, setCourseTitle] = useState("");
+  const [sourceType, setSourceType] = useState<"youtube" | "pdf">("youtube");
   const { toast } = useToast();
 
   const handleDrag = (e: React.DragEvent) => {
@@ -34,13 +38,21 @@ const UploadSection = () => {
       description: "Analyzing your YouTube video and generating course content...",
     });
 
+    setSourceType("youtube");
+    setCourseTitle("Introduction to Machine Learning - YouTube Video");
+
     // Simulate processing
     setTimeout(() => {
       setIsProcessing(false);
+      setShowCoursePreview(true);
       toast({
         title: "Course Generated Successfully!",
         description: "Your micro-course is ready with notes, quizzes, and AI tutor.",
       });
+      // Scroll to preview
+      setTimeout(() => {
+        document.getElementById('course-preview')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }, 3000);
   };
 
@@ -53,13 +65,21 @@ const UploadSection = () => {
       description: `Processing ${files.length} PDF file(s) to generate your course...`,
     });
 
+    setSourceType("pdf");
+    setCourseTitle(`Course from ${files.length} PDF file(s)`);
+
     // Simulate processing
     setTimeout(() => {
       setIsProcessing(false);
+      setShowCoursePreview(true);
       toast({
         title: "Course Generated Successfully!",
         description: "Your PDF content has been transformed into an interactive course.",
       });
+      // Scroll to preview
+      setTimeout(() => {
+        document.getElementById('course-preview')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }, 3000);
   };
 
@@ -223,6 +243,14 @@ const UploadSection = () => {
             </div>
           </CardContent>
         </Card>
+
+        <div id="course-preview">
+          <CoursePreview 
+            isVisible={showCoursePreview}
+            courseTitle={courseTitle}
+            sourceType={sourceType}
+          />
+        </div>
       </div>
     </section>
   );
