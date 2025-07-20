@@ -5,18 +5,66 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Upload, Youtube, FileText, ArrowRight, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const UploadSection = () => {
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { toast } = useToast();
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(e.type === "dragenter" || e.type === "dragover");
   };
 
+  const handleYouTubeSubmit = async () => {
+    if (!youtubeUrl.trim()) {
+      toast({
+        title: "URL Required",
+        description: "Please enter a YouTube URL to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    toast({
+      title: "Processing Started!",
+      description: "Analyzing your YouTube video and generating course content...",
+    });
+
+    // Simulate processing
+    setTimeout(() => {
+      setIsProcessing(false);
+      toast({
+        title: "Course Generated Successfully!",
+        description: "Your micro-course is ready with notes, quizzes, and AI tutor.",
+      });
+    }, 3000);
+  };
+
+  const handleFileUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    setIsProcessing(true);
+    toast({
+      title: "Files Uploaded!",
+      description: `Processing ${files.length} PDF file(s) to generate your course...`,
+    });
+
+    // Simulate processing
+    setTimeout(() => {
+      setIsProcessing(false);
+      toast({
+        title: "Course Generated Successfully!",
+        description: "Your PDF content has been transformed into an interactive course.",
+      });
+    }, 3000);
+  };
+
   return (
-    <section className="py-20 bg-muted/30">
+    <section id="upload-section" className="py-20 bg-muted/30">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">
@@ -61,8 +109,14 @@ const UploadSection = () => {
                       onChange={(e) => setYoutubeUrl(e.target.value)}
                       className="text-base h-12"
                     />
-                    <Button variant="hero" size="lg" className="px-6">
-                      Generate Course
+                    <Button 
+                      variant="hero" 
+                      size="lg" 
+                      className="px-6"
+                      onClick={handleYouTubeSubmit}
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? "Processing..." : "Generate Course"}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </div>
@@ -94,7 +148,8 @@ const UploadSection = () => {
                   onDragOver={handleDrag}
                   onDrop={(e) => {
                     handleDrag(e);
-                    // Handle file drop logic here
+                    const files = e.dataTransfer.files;
+                    handleFileUpload(files);
                   }}
                 >
                   <Upload className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
@@ -104,7 +159,21 @@ const UploadSection = () => {
                   <p className="text-muted-foreground mb-4">
                     Or click to browse and select files
                   </p>
-                  <Button variant="outline" size="lg">
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    onClick={() => {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = '.pdf';
+                      input.multiple = true;
+                      input.onchange = (e) => {
+                        const target = e.target as HTMLInputElement;
+                        handleFileUpload(target.files);
+                      };
+                      input.click();
+                    }}
+                  >
                     Choose Files
                   </Button>
                   <p className="text-sm text-muted-foreground mt-4">
@@ -112,8 +181,24 @@ const UploadSection = () => {
                   </p>
                 </div>
 
-                <Button variant="hero" size="lg" className="w-full">
-                  Generate Course from PDFs
+                <Button 
+                  variant="hero" 
+                  size="lg" 
+                  className="w-full"
+                  disabled={isProcessing}
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.pdf';
+                    input.multiple = true;
+                    input.onchange = (e) => {
+                      const target = e.target as HTMLInputElement;
+                      handleFileUpload(target.files);
+                    };
+                    input.click();
+                  }}
+                >
+                  {isProcessing ? "Processing..." : "Generate Course from PDFs"}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </TabsContent>

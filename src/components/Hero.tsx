@@ -2,8 +2,22 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, BookOpen, Brain, Zap } from "lucide-react";
 import heroImage from "@/assets/hero-education.jpg";
+import { useToast } from "@/hooks/use-toast";
 
 const Hero = () => {
+  const { toast } = useToast();
+
+  const handleGetStarted = () => {
+    document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleWatchDemo = () => {
+    toast({
+      title: "Demo Coming Soon!",
+      description: "Interactive demo is being prepared. Try the upload functionality below!",
+    });
+  };
+
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
@@ -33,11 +47,21 @@ const Hero = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button variant="hero" size="lg" className="text-lg px-8">
+              <Button 
+                variant="hero" 
+                size="lg" 
+                className="text-lg px-8"
+                onClick={handleGetStarted}
+              >
                 Start Creating
                 <ArrowRight className="w-5 h-5" />
               </Button>
-              <Button variant="outline" size="lg" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                onClick={handleWatchDemo}
+              >
                 Watch Demo
               </Button>
             </div>
