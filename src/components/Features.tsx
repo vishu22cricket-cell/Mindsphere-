@@ -71,7 +71,7 @@ const Features = () => {
   ];
 
   return (
-    <section className="py-20 bg-background">
+    <section id="features" className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-6">
         {/* Features header */}
         <div className="text-center mb-16">

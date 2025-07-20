@@ -3,22 +3,24 @@ import { Card } from "@/components/ui/card";
 import { ArrowRight, BookOpen, Brain, Zap } from "lucide-react";
 import heroImage from "@/assets/hero-education.jpg";
 import { useToast } from "@/hooks/use-toast";
+import DemoModal from "./DemoModal";
+import { useState } from "react";
 
 const Hero = () => {
   const { toast } = useToast();
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
   const handleGetStarted = () => {
     document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleWatchDemo = () => {
-    toast({
-      title: "Demo Coming Soon!",
-      description: "Interactive demo is being prepared. Try the upload functionality below!",
-    });
+    setIsDemoModalOpen(true);
   };
 
   return (
+    <>
+    <DemoModal isOpen={isDemoModalOpen} onClose={() => setIsDemoModalOpen(false)} />
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-hero opacity-95" />
@@ -126,6 +128,7 @@ const Hero = () => {
       <div className="absolute top-20 left-10 w-20 h-20 bg-white/5 rounded-full blur-xl" />
       <div className="absolute bottom-20 right-10 w-32 h-32 bg-accent/20 rounded-full blur-2xl" />
     </div>
+    </>
   );
 };
 
