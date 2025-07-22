@@ -17,52 +17,98 @@ interface CoursePreviewProps {
   isVisible: boolean;
   courseTitle: string;
   sourceType: "youtube" | "pdf";
+  inputContent?: string; // URL or file name
 }
 
-const CoursePreview = ({ isVisible, courseTitle, sourceType }: CoursePreviewProps) => {
+const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: CoursePreviewProps) => {
   if (!isVisible) return null;
 
-  const mockNotes = [
-    {
-      title: "Introduction to Machine Learning",
-      content: "Machine learning is a subset of artificial intelligence that enables computers to learn and make decisions from data without being explicitly programmed...",
-      duration: "5 min read"
-    },
-    {
-      title: "Types of Machine Learning",
-      content: "There are three main types: Supervised Learning, Unsupervised Learning, and Reinforcement Learning...",
-      duration: "7 min read"
-    },
-    {
-      title: "Neural Networks Basics",
-      content: "Neural networks are computing systems inspired by biological neural networks. They consist of layers of interconnected nodes...",
-      duration: "10 min read"
-    }
-  ];
+  // Generate dynamic content based on source type and input
+  const generateContent = () => {
+    const isYoutube = sourceType === "youtube";
+    const isPDF = sourceType === "pdf";
+    
+    // Base content variations for different source types
+    const contentVariations = {
+      youtube: {
+        notes: [
+          {
+            title: "Video Overview & Key Concepts",
+            content: `This section covers the main topics discussed in the video. Key insights have been extracted and organized for easy learning and reference...`,
+            duration: "8 min read"
+          },
+          {
+            title: "Detailed Analysis",
+            content: `Deep dive into the core concepts presented. This analysis breaks down complex topics into digestible segments with practical examples...`,
+            duration: "12 min read"
+          },
+          {
+            title: "Practical Applications",
+            content: `Real-world applications and use cases discussed in the video. Learn how to implement these concepts in practical scenarios...`,
+            duration: "6 min read"
+          }
+        ],
+        quizzes: [
+          {
+            question: "What was the main topic covered in this video?",
+            options: ["Basic concepts", "Advanced techniques", "Practical applications", "All of the above"],
+            correct: 3
+          },
+          {
+            question: "Which key insight was emphasized throughout the video?",
+            options: ["Theory is most important", "Practice makes perfect", "Understanding fundamentals", "Quick implementation"],
+            correct: 2
+          }
+        ],
+        flashcards: [
+          { front: "Main Video Topic", back: "Core subject matter covered in the video content" },
+          { front: "Key Takeaway", back: "Primary learning objective from the video lesson" }
+        ]
+      },
+      pdf: {
+        notes: [
+          {
+            title: "Document Summary",
+            content: `Comprehensive overview of the PDF content. Key sections have been identified and summarized for structured learning...`,
+            duration: "10 min read"
+          },
+          {
+            title: "Important Concepts",
+            content: `Critical concepts and definitions extracted from the document. These form the foundation for understanding the subject matter...`,
+            duration: "15 min read"
+          },
+          {
+            title: "Detailed Explanations",
+            content: `In-depth explanations of complex topics found in the document. Each concept is broken down with examples and context...`,
+            duration: "20 min read"
+          }
+        ],
+        quizzes: [
+          {
+            question: "What type of document was processed?",
+            options: ["Research paper", "Textbook chapter", "Manual", "Could be any of these"],
+            correct: 3
+          },
+          {
+            question: "How is the content organized?",
+            options: ["Chronologically", "By importance", "By complexity", "Logically structured"],
+            correct: 3
+          }
+        ],
+        flashcards: [
+          { front: "Document Type", back: "PDF content processed and transformed into learning materials" },
+          { front: "Content Structure", back: "Organized sections covering key topics from the original document" }
+        ]
+      }
+    };
 
-  const mockQuizzes = [
-    {
-      question: "What is the main goal of supervised learning?",
-      options: ["To find patterns in unlabeled data", "To learn from labeled training data", "To interact with an environment", "To compress data"],
-      correct: 1
-    },
-    {
-      question: "Which algorithm is commonly used for classification?",
-      options: ["K-means", "Random Forest", "PCA", "DBSCAN"],
-      correct: 1
-    },
-    {
-      question: "What does a neural network neuron do?",
-      options: ["Stores data", "Processes inputs and produces output", "Connects to the internet", "Runs algorithms"],
-      correct: 1
-    }
-  ];
+    return contentVariations[sourceType];
+  };
 
-  const mockFlashcards = [
-    { front: "What is AI?", back: "Artificial Intelligence - computer systems that perform tasks requiring human intelligence" },
-    { front: "Define Machine Learning", back: "A subset of AI that learns patterns from data without explicit programming" },
-    { front: "What is a Neural Network?", back: "Computing system inspired by biological neural networks with interconnected nodes" }
-  ];
+  const content = generateContent();
+  const mockNotes = content.notes;
+  const mockQuizzes = content.quizzes;
+  const mockFlashcards = content.flashcards;
 
   return (
     <div className="mt-8 animate-fade-in">
