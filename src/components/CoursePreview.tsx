@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 import { 
   BookOpen, 
   MessageSquare, 
@@ -10,7 +12,8 @@ import {
   Download,
   CheckCircle,
   Clock,
-  Star
+  Star,
+  Send
 } from "lucide-react";
 
 interface CoursePreviewProps {
@@ -21,7 +24,64 @@ interface CoursePreviewProps {
 }
 
 const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: CoursePreviewProps) => {
+  const { toast } = useToast();
+  const [chatMessages, setChatMessages] = useState([
+    {
+      id: 1,
+      type: 'ai' as const,
+      message: "Hi! I'm your AI tutor for this course. I can help explain concepts, answer questions, and provide additional examples. What would you like to learn more about?"
+    },
+    {
+      id: 2,
+      type: 'user' as const,
+      message: "Can you explain neural networks in simple terms?"
+    },
+    {
+      id: 3,
+      type: 'ai' as const,
+      message: "Think of neural networks like your brain! Just as your brain has neurons that connect and pass information, artificial neural networks have nodes that process information. Each node receives input, processes it, and passes the result to the next layer. The network 'learns' by adjusting these connections based on examples, just like how you learn from experience! 🧠"
+    }
+  ]);
+  const [newMessage, setNewMessage] = useState('');
+
   if (!isVisible) return null;
+
+  const handleSendMessage = () => {
+    if (!newMessage.trim()) return;
+    
+    const userMessage = {
+      id: Date.now(),
+      type: 'user' as const,
+      message: newMessage
+    };
+    
+    setChatMessages(prev => [...prev, userMessage]);
+    setNewMessage('');
+    
+    // Simulate AI response
+    setTimeout(() => {
+      const aiResponse = {
+        id: Date.now() + 1,
+        type: 'ai' as const,
+        message: "Great question! Based on the course content, I can provide detailed insights about that topic. Would you like me to explain it step by step or provide some practical examples?"
+      };
+      setChatMessages(prev => [...prev, aiResponse]);
+    }, 1000);
+  };
+
+  const handleExportCourse = () => {
+    toast({
+      title: "Course Export Started",
+      description: "Your complete course is being prepared for download...",
+    });
+  };
+
+  const handleSaveToDashboard = () => {
+    toast({
+      title: "Course Saved",
+      description: "Successfully saved to your dashboard for future access.",
+    });
+  };
 
   // Generate dynamic content based on source type and input
   const generateContent = () => {
@@ -361,88 +421,45 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
               <Card className="border border-border/50">
                 <CardContent className="p-6">
                   <div className="space-y-4 max-h-60 overflow-y-auto">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
-                        <Brain className="w-4 h-4 text-white" />
+                    {chatMessages.map((message) => (
+                      <div key={message.id} className={`flex items-start gap-3 ${message.type === 'user' ? 'justify-end' : ''}`}>
+                        {message.type === 'ai' && (
+                          <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
+                            <Brain className="w-4 h-4 text-white" />
+                          </div>
+                        )}
+                        <div className={`flex-1 ${message.type === 'user' ? 'max-w-xs' : ''}`}>
+                          <p className={`text-sm rounded-lg p-3 ${
+                            message.type === 'ai' 
+                              ? 'bg-muted/50' 
+                              : 'bg-primary text-primary-foreground'
+                          }`}>
+                            {message.message}
+                          </p>
+                        </div>
+                        {message.type === 'user' && (
+                          <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                            <span className="text-xs font-medium">You</span>
+                          </div>
+                        )}
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm bg-muted/50 rounded-lg p-3">
-                          Hi! I'm your AI tutor for this course. I can help explain concepts, answer questions, and provide additional examples. What would you like to learn more about?
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 justify-end">
-                      <div className="flex-1 max-w-xs">
-                        <p className="text-sm bg-primary text-primary-foreground rounded-lg p-3">
-                          Can you explain neural networks in simple terms?
-                        </p>
-                      </div>
-                      <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-                        <span className="text-xs font-medium">You</span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
-                        <Brain className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm bg-muted/50 rounded-lg p-3">
-                          Think of neural networks like your brain! Just as your brain has neurons that connect and pass information, artificial neural networks have nodes that process information. Each node receives input, processes it, and passes the result to the next layer. The network "learns" by adjusting these connections based on examples, just like how you learn from experience! 🧠
-                        </p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                   <div className="flex gap-2 mt-4">
                     <input 
                       type="text" 
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
                       placeholder="Ask your AI tutor anything..." 
                       className="flex-1 px-4 py-3 border border-border rounded-lg text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          const input = e.currentTarget;
-                          const message = input.value.trim();
-                          if (message) {
-                            // Simulate AI response
-                            const chatContainer = input.closest('.space-y-4');
-                            if (chatContainer) {
-                              // Add user message
-                              const userMsg = document.createElement('div');
-                              userMsg.className = 'flex items-start gap-3 justify-end';
-                              userMsg.innerHTML = `
-                                <div class="flex-1 max-w-xs">
-                                  <p class="text-sm bg-primary text-primary-foreground rounded-lg p-3">${message}</p>
-                                </div>
-                                <div class="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-                                  <span class="text-xs font-medium">You</span>
-                                </div>
-                              `;
-                              chatContainer.appendChild(userMsg);
-                              
-                              // Add AI response after a delay
-                              setTimeout(() => {
-                                const aiMsg = document.createElement('div');
-                                aiMsg.className = 'flex items-start gap-3';
-                                aiMsg.innerHTML = `
-                                  <div class="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                                    </svg>
-                                  </div>
-                                  <div class="flex-1">
-                                    <p class="text-sm bg-muted/50 rounded-lg p-3">Great question! Based on the course content, I can provide detailed insights about that topic. Would you like me to explain it step by step or provide some practical examples?</p>
-                                  </div>
-                                `;
-                                chatContainer.appendChild(aiMsg);
-                                chatContainer.scrollTop = chatContainer.scrollHeight;
-                              }, 1000);
-                            }
-                            input.value = '';
-                          }
+                          handleSendMessage();
                         }
                       }}
                     />
-                    <Button size="sm" className="px-4">
-                      <MessageSquare className="w-4 h-4 mr-2" />
+                    <Button size="sm" className="px-4" onClick={handleSendMessage}>
+                      <Send className="w-4 h-4 mr-2" />
                       Send
                     </Button>
                   </div>
@@ -452,11 +469,11 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
           </Tabs>
 
           <div className="flex gap-3 mt-6 pt-6 border-t">
-            <Button variant="hero" className="flex-1">
+            <Button variant="hero" className="flex-1" onClick={handleExportCourse}>
               <Download className="w-4 h-4 mr-2" />
               Export Complete Course
             </Button>
-            <Button variant="outline" className="flex-1">
+            <Button variant="outline" className="flex-1" onClick={handleSaveToDashboard}>
               <Star className="w-4 h-4 mr-2" />
               Save to Dashboard
             </Button>
