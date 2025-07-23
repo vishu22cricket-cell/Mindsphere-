@@ -118,162 +118,184 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
     const isYoutube = sourceType === "youtube";
     const isPDF = sourceType === "pdf";
     
-    // Base content variations for different source types
+    // Create content variations based on actual input
+    const getTopicKeywords = () => {
+      const input = inputContent?.toLowerCase() || courseTitle.toLowerCase();
+      if (input.includes('machine learning') || input.includes('ai') || input.includes('neural')) {
+        return 'AI/ML';
+      } else if (input.includes('react') || input.includes('javascript') || input.includes('programming')) {
+        return 'Programming';
+      } else if (input.includes('business') || input.includes('management') || input.includes('strategy')) {
+        return 'Business';
+      } else if (input.includes('design') || input.includes('ui') || input.includes('ux')) {
+        return 'Design';
+      } else if (input.includes('data') || input.includes('analytics') || input.includes('statistics')) {
+        return 'Data Science';
+      } else if (input.includes('marketing') || input.includes('sales') || input.includes('growth')) {
+        return 'Marketing';
+      } else {
+        return 'General';
+      }
+    };
+
+    const topic = getTopicKeywords();
+    const inputName = inputContent || courseTitle;
+
     const contentVariations = {
       youtube: {
         notes: [
           {
-            title: "Video Overview & Key Concepts",
-            content: `This section covers the main topics discussed in the video. Key insights have been extracted and organized for easy learning and reference...`,
+            title: `Key Insights from "${inputName}"`,
+            content: `This video covers essential ${topic.toLowerCase()} concepts that are fundamental to understanding the field. The presenter breaks down complex ideas into digestible segments, providing practical examples and real-world applications. Key takeaways include implementation strategies, best practices, and common pitfalls to avoid when working in this domain.`,
             duration: "8 min read"
           },
           {
-            title: "Detailed Analysis",
-            content: `Deep dive into the core concepts presented. This analysis breaks down complex topics into digestible segments with practical examples...`,
+            title: `Deep Dive Analysis - ${topic} Fundamentals`,
+            content: `A comprehensive analysis of the core principles discussed in the video. This section explores the theoretical foundations and practical implications of the concepts presented. We examine how these ideas connect to broader industry trends and their relevance to current ${topic.toLowerCase()} practices and methodologies.`,
             duration: "12 min read"
           },
           {
-            title: "Practical Applications",
-            content: `Real-world applications and use cases discussed in the video. Learn how to implement these concepts in practical scenarios...`,
+            title: `Practical Implementation Guide`,
+            content: `Step-by-step guidance on applying the concepts from "${inputName}" in real-world scenarios. This practical guide includes actionable strategies, implementation frameworks, and case studies that demonstrate successful application of the discussed principles in professional ${topic.toLowerCase()} environments.`,
             duration: "6 min read"
           }
         ],
         quizzes: [
           {
-            question: "According to the video, what is the most critical factor for implementing machine learning models in production?",
+            question: `Based on the video "${inputName.substring(0, 50)}...", what was identified as the most critical factor for success in ${topic.toLowerCase()}?`,
             options: [
-              "Data quality and preprocessing",
-              "Model complexity and accuracy",
-              "Infrastructure scalability",
-              "Team expertise and collaboration"
+              "Understanding foundational principles and theory",
+              "Practical hands-on experience and application", 
+              "Staying updated with latest trends and technologies",
+              "Building strong professional networks and mentorship"
             ],
             correct: 0,
-            explanation: "High-quality, well-preprocessed data is fundamental to successful ML deployment, as poor data quality can undermine even the most sophisticated models."
+            explanation: `The video emphasized that mastering foundational principles in ${topic.toLowerCase()} provides the strongest base for long-term success, as trends change but core concepts remain valuable.`
           },
           {
-            question: "Which architectural pattern was recommended for handling real-time data processing?",
+            question: `Which approach was recommended for beginners starting in ${topic.toLowerCase()}?`,
             options: [
-              "Batch processing with scheduled jobs",
-              "Event-driven microservices architecture",
-              "Monolithic application design",
-              "Client-side processing only"
+              "Jump directly into advanced topics",
+              "Start with practical projects immediately",
+              "Build solid theoretical understanding first",
+              "Focus only on the most popular tools"
             ],
-            correct: 1,
-            explanation: "Event-driven microservices provide the flexibility and scalability needed for real-time data processing while maintaining system resilience."
+            correct: 2,
+            explanation: `A solid theoretical foundation enables better decision-making and problem-solving as you progress in ${topic.toLowerCase()}, making it the recommended starting approach.`
           },
           {
-            question: "What was identified as the primary challenge when scaling distributed systems?",
+            question: `What was highlighted as the biggest challenge when scaling ${topic.toLowerCase()} solutions?`,
             options: [
-              "Hardware limitations",
-              "Network latency and consistency",
-              "Programming language choice",
-              "Database selection"
+              "Technical complexity and system architecture",
+              "Team coordination and communication",
+              "Budget constraints and resource allocation", 
+              "Maintaining quality while increasing speed"
             ],
-            correct: 1,
-            explanation: "Managing network latency while maintaining data consistency across distributed nodes is the fundamental challenge in scaling distributed systems."
+            correct: 3,
+            explanation: `Balancing quality with speed becomes increasingly difficult as ${topic.toLowerCase()} projects scale, requiring careful planning and process optimization.`
           }
         ],
         flashcards: [
           { 
-            front: "CAP Theorem", 
-            back: "In distributed systems, you can only guarantee 2 out of 3: Consistency, Availability, and Partition tolerance",
-            category: "System Design"
+            front: `Core ${topic} Principle`, 
+            back: `Fundamental concept in ${topic.toLowerCase()} that serves as the foundation for more advanced techniques and applications discussed in "${inputName}"`,
+            category: topic
           },
           { 
-            front: "Event Sourcing", 
-            back: "An architectural pattern where state changes are stored as a sequence of events, enabling audit trails and time-travel debugging",
-            category: "Architecture"
+            front: `${topic} Best Practice`, 
+            back: `Recommended approach or methodology highlighted in the video for achieving optimal results in ${topic.toLowerCase()} projects`,
+            category: "Best Practices"
           },
           { 
-            front: "Circuit Breaker Pattern", 
-            back: "A design pattern that prevents cascading failures by monitoring service calls and 'opening' when failure rates exceed thresholds",
-            category: "Resilience"
+            front: `Implementation Strategy`, 
+            back: `Step-by-step approach for applying ${topic.toLowerCase()} concepts in real-world scenarios, as outlined in the video content`,
+            category: "Implementation"
           },
           { 
-            front: "CQRS", 
-            back: "Command Query Responsibility Segregation - separating read and write operations for better performance and scalability",
-            category: "Architecture"
+            front: `${topic} Challenge`, 
+            back: `Common obstacle or difficulty encountered when working with ${topic.toLowerCase()} that was addressed in the video discussion`,
+            category: "Problem Solving"
           }
         ]
       },
       pdf: {
         notes: [
           {
-            title: "Document Summary",
-            content: `Comprehensive overview of the PDF content. Key sections have been identified and summarized for structured learning...`,
+            title: `Document Overview: "${inputName}"`,
+            content: `Comprehensive summary of the key concepts and findings presented in this ${topic.toLowerCase()} document. The material covers essential theories, methodologies, and practical applications relevant to the field. This overview identifies the main arguments, supporting evidence, and conclusions drawn by the authors.`,
             duration: "10 min read"
           },
           {
-            title: "Important Concepts",
-            content: `Critical concepts and definitions extracted from the document. These form the foundation for understanding the subject matter...`,
+            title: `Critical Analysis - ${topic} Research`,
+            content: `In-depth analysis of the research methodology, data interpretation, and conclusions presented in "${inputName}". This section examines the validity of the arguments, the strength of the evidence, and the implications for current ${topic.toLowerCase()} practice and future research directions.`,
             duration: "15 min read"
           },
           {
-            title: "Detailed Explanations",
-            content: `In-depth explanations of complex topics found in the document. Each concept is broken down with examples and context...`,
+            title: `Key Concepts and Applications`,
+            content: `Detailed exploration of the fundamental concepts introduced in the document and their practical applications. This section breaks down complex theoretical frameworks into understandable components and demonstrates how they can be applied in professional ${topic.toLowerCase()} contexts.`,
             duration: "20 min read"
           }
         ],
         quizzes: [
           {
-            question: "Based on the research findings, which methodology showed the highest success rate for data validation?",
+            question: `According to the document "${inputName.substring(0, 50)}...", what methodology was most effective for ${topic.toLowerCase()} research?`,
             options: [
-              "Cross-validation with k-fold splitting",
-              "Bootstrap sampling techniques",
-              "Stratified random sampling",
-              "Monte Carlo simulation methods"
+              "Quantitative analysis with statistical validation",
+              "Qualitative research with case study approach", 
+              "Mixed-methods combining multiple data sources",
+              "Experimental design with controlled variables"
             ],
-            correct: 0,
-            explanation: "Cross-validation with k-fold splitting provides robust estimates by training and testing on different data subsets, minimizing overfitting risks."
+            correct: 2,
+            explanation: `The document emphasized that mixed-methods approaches provide the most comprehensive understanding in ${topic.toLowerCase()} research by combining multiple perspectives and data types.`
           },
           {
-            question: "According to the document, what is the primary limitation of traditional statistical approaches?",
+            question: `What was identified as the primary limitation in current ${topic.toLowerCase()} approaches?`,
             options: [
-              "Computational complexity",
-              "Assumption of linear relationships",
-              "Limited sample size requirements",
-              "Inability to handle missing data"
+              "Lack of standardized measurement tools",
+              "Insufficient sample sizes in studies",
+              "Limited consideration of contextual factors",
+              "Overreliance on theoretical models"
             ],
-            correct: 1,
-            explanation: "Traditional statistical methods often assume linear relationships, which may not capture complex, non-linear patterns in real-world data."
+            correct: 2,
+            explanation: `The research highlighted that contextual factors significantly impact ${topic.toLowerCase()} outcomes but are often overlooked in traditional approaches.`
           },
           {
-            question: "Which framework was recommended for implementing the proposed solution?",
+            question: `Which framework was recommended for implementing the document's findings?`,
             options: [
-              "Agile development methodology",
-              "Waterfall project management",
-              "DevOps continuous integration",
-              "Design thinking approach"
+              "Systematic implementation with phase-by-phase rollout",
+              "Rapid deployment across all areas simultaneously", 
+              "Pilot testing followed by gradual expansion",
+              "Theoretical validation before practical application"
             ],
-            correct: 0,
-            explanation: "Agile methodology's iterative approach aligns with the experimental nature of the proposed solution, allowing for rapid testing and refinement."
+            correct: 2,
+            explanation: `Pilot testing allows for validation and refinement of ${topic.toLowerCase()} approaches before full-scale implementation, reducing risks and improving outcomes.`
           }
         ],
         flashcards: [
           { 
-            front: "Statistical Significance", 
-            back: "A measure (p-value < 0.05) indicating that observed results are unlikely to have occurred by chance alone",
-            category: "Statistics"
-          },
-          { 
-            front: "Null Hypothesis", 
-            back: "The default assumption that there is no relationship or effect, which researchers attempt to reject through testing",
+            front: `${topic} Research Method`, 
+            back: `Primary research methodology discussed in "${inputName}" for investigating ${topic.toLowerCase()} phenomena and generating reliable findings`,
             category: "Research Methods"
           },
           { 
-            front: "Type I Error", 
-            back: "False positive - rejecting a true null hypothesis, concluding an effect exists when it doesn't",
-            category: "Statistical Inference"
+            front: `Key Finding`, 
+            back: `Major discovery or conclusion from the research presented in the document that advances understanding in ${topic.toLowerCase()}`,
+            category: topic
           },
           { 
-            front: "Effect Size", 
-            back: "A quantitative measure of the magnitude of a phenomenon, indicating practical significance beyond statistical significance",
-            category: "Statistics"
+            front: `Theoretical Framework`, 
+            back: `Conceptual model or theory used in the document to explain and predict ${topic.toLowerCase()} behaviors and outcomes`,
+            category: "Theory"
           },
           { 
-            front: "Confidence Interval", 
-            back: "A range of values that likely contains the true population parameter with a specified level of confidence (e.g., 95%)",
-            category: "Statistical Inference"
+            front: `Practical Application`, 
+            back: `Real-world use case or implementation strategy for the ${topic.toLowerCase()} concepts described in the research document`,
+            category: "Application"
+          },
+          { 
+            front: `Research Limitation`, 
+            back: `Acknowledged constraint or boundary of the study that affects the generalizability of the ${topic.toLowerCase()} findings`,
+            category: "Critical Analysis"
           }
         ]
       }
