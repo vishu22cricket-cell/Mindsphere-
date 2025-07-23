@@ -46,6 +46,35 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
 
   if (!isVisible) return null;
 
+  const getAIResponse = (userMessage: string) => {
+    const message = userMessage.toLowerCase();
+    
+    // Different responses based on keywords or topics
+    if (message.includes('neural network') || message.includes('ai') || message.includes('machine learning')) {
+      return "Neural networks are inspired by biological neurons! They consist of interconnected nodes that process information in layers. Each connection has a weight that gets adjusted during training. Think of it like learning to recognize patterns - the more examples you see, the better you get at identifying them.";
+    } else if (message.includes('explain') || message.includes('what is') || message.includes('how does')) {
+      return "Great question! Let me break this down step by step with examples from the course content. This concept builds on the fundamentals we covered earlier and connects to practical applications you'll encounter in real-world scenarios.";
+    } else if (message.includes('example') || message.includes('practical') || message.includes('use case')) {
+      return "Here's a practical example: In the finance industry, this concept is used for fraud detection, risk assessment, and algorithmic trading. For instance, banks use these techniques to analyze transaction patterns and identify suspicious activities in real-time.";
+    } else if (message.includes('difference') || message.includes('compare') || message.includes('vs')) {
+      return "The key differences lie in their approach and application. Method A focuses on accuracy and precision, while Method B prioritizes speed and scalability. The choice depends on your specific requirements - data size, processing time, and accuracy needs.";
+    } else if (message.includes('code') || message.includes('implement') || message.includes('programming')) {
+      return "From a programming perspective, here's how you'd implement this: Start with data preprocessing, then define your model architecture, set up training loops, and finally evaluate performance. I can walk you through each step with code examples if you'd like!";
+    } else if (message.includes('thank') || message.includes('thanks')) {
+      return "You're welcome! I'm here to help you master these concepts. Feel free to ask about any part of the course material - whether it's theory, practical applications, or implementation details.";
+    } else {
+      // Default varied responses
+      const defaultResponses = [
+        "That's an insightful question! Based on the course material, this topic connects to several key principles we've discussed. Let me elaborate on the most important aspects.",
+        "Excellent point! This concept is fundamental to understanding the broader framework. I can provide specific examples and walk through the reasoning step by step.",
+        "I can definitely help with that! This is a common area where students need clarification. Let me explain it using analogies and practical examples from the course.",
+        "Great question! This relates directly to what we covered in the previous sections. The key insight here is understanding how different components work together.",
+        "That's a topic that often requires deeper explanation. Based on the course content, here are the essential points you need to understand about this concept."
+      ];
+      return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    }
+  };
+
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
     
@@ -56,14 +85,15 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
     };
     
     setChatMessages(prev => [...prev, userMessage]);
+    const currentMessage = newMessage;
     setNewMessage('');
     
-    // Simulate AI response
+    // Simulate AI response with contextual reply
     setTimeout(() => {
       const aiResponse = {
         id: Date.now() + 1,
         type: 'ai' as const,
-        message: "Great question! Based on the course content, I can provide detailed insights about that topic. Would you like me to explain it step by step or provide some practical examples?"
+        message: getAIResponse(currentMessage)
       };
       setChatMessages(prev => [...prev, aiResponse]);
     }, 1000);
