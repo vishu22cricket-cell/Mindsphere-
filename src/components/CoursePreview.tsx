@@ -113,195 +113,225 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
     });
   };
 
-  // Generate dynamic content based on source type and input
+  // Generate intelligent content based on input analysis
   const generateContent = () => {
-    const isYoutube = sourceType === "youtube";
-    const isPDF = sourceType === "pdf";
+    const input = inputContent?.toLowerCase() || courseTitle.toLowerCase();
     
-    // Create content variations based on actual input
-    const getTopicKeywords = () => {
-      const input = inputContent?.toLowerCase() || courseTitle.toLowerCase();
-      if (input.includes('machine learning') || input.includes('ai') || input.includes('neural')) {
-        return 'AI/ML';
-      } else if (input.includes('react') || input.includes('javascript') || input.includes('programming')) {
-        return 'Programming';
-      } else if (input.includes('business') || input.includes('management') || input.includes('strategy')) {
-        return 'Business';
-      } else if (input.includes('design') || input.includes('ui') || input.includes('ux')) {
-        return 'Design';
-      } else if (input.includes('data') || input.includes('analytics') || input.includes('statistics')) {
-        return 'Data Science';
-      } else if (input.includes('marketing') || input.includes('sales') || input.includes('growth')) {
-        return 'Marketing';
-      } else {
-        return 'General';
+    // Advanced topic detection with keywords
+    const analyzeInput = () => {
+      const topics = {
+        'ai-ml': ['machine learning', 'ai', 'neural', 'deep learning', 'artificial intelligence', 'algorithm', 'model'],
+        'programming': ['react', 'javascript', 'python', 'coding', 'programming', 'software', 'development', 'web'],
+        'business': ['business', 'management', 'strategy', 'entrepreneur', 'startup', 'finance', 'investment'],
+        'design': ['design', 'ui', 'ux', 'interface', 'user experience', 'figma', 'prototype'],
+        'data-science': ['data', 'analytics', 'statistics', 'visualization', 'big data', 'sql', 'analysis'],
+        'marketing': ['marketing', 'sales', 'growth', 'seo', 'social media', 'advertising', 'branding'],
+        'science': ['research', 'study', 'scientific', 'experiment', 'theory', 'methodology', 'academic'],
+        'health': ['health', 'medical', 'wellness', 'fitness', 'nutrition', 'psychology', 'therapy'],
+        'education': ['education', 'learning', 'teaching', 'course', 'tutorial', 'lesson', 'academic']
+      };
+
+      for (const [category, keywords] of Object.entries(topics)) {
+        if (keywords.some(keyword => input.includes(keyword))) {
+          return category;
+        }
+      }
+      return 'general';
+    };
+
+    const detectedTopic = analyzeInput();
+    const inputName = inputContent || courseTitle;
+    
+    // Extract key phrases for more specific content
+    const extractKeyPhrases = () => {
+      const words = input.split(' ').filter(word => word.length > 3);
+      return words.slice(0, 3).join(', ');
+    };
+
+    const keyPhrases = extractKeyPhrases();
+
+    const topicConfigs = {
+      'ai-ml': {
+        displayName: 'Machine Learning & AI',
+        focus: 'algorithms, neural networks, and data modeling',
+        applications: 'predictive analytics, automation, and intelligent systems'
+      },
+      'programming': {
+        displayName: 'Programming & Development',
+        focus: 'code structure, best practices, and software architecture',
+        applications: 'web applications, mobile apps, and system optimization'
+      },
+      'business': {
+        displayName: 'Business Strategy',
+        focus: 'strategic planning, market analysis, and organizational growth',
+        applications: 'decision-making, process optimization, and competitive advantage'
+      },
+      'design': {
+        displayName: 'Design & User Experience',
+        focus: 'user interface design, interaction patterns, and visual hierarchy',
+        applications: 'product design, user research, and design systems'
+      },
+      'data-science': {
+        displayName: 'Data Science & Analytics',
+        focus: 'data analysis, statistical methods, and visualization techniques',
+        applications: 'business intelligence, reporting, and data-driven insights'
+      },
+      'marketing': {
+        displayName: 'Marketing & Growth',
+        focus: 'customer acquisition, brand building, and market positioning',
+        applications: 'campaign optimization, audience targeting, and conversion strategies'
+      },
+      'science': {
+        displayName: 'Scientific Research',
+        focus: 'research methodology, experimental design, and evidence-based conclusions',
+        applications: 'academic research, hypothesis testing, and knowledge advancement'
+      },
+      'health': {
+        displayName: 'Health & Wellness',
+        focus: 'health principles, wellness strategies, and evidence-based practices',
+        applications: 'lifestyle optimization, preventive care, and well-being improvement'
+      },
+      'education': {
+        displayName: 'Education & Learning',
+        focus: 'learning principles, educational methods, and knowledge transfer',
+        applications: 'curriculum design, instructional strategies, and skill development'
+      },
+      'general': {
+        displayName: 'General Knowledge',
+        focus: 'core concepts, fundamental principles, and practical applications',
+        applications: 'skill development, knowledge building, and practical implementation'
       }
     };
 
-    const topic = getTopicKeywords();
-    const inputName = inputContent || courseTitle;
+    const config = topicConfigs[detectedTopic];
 
-    const contentVariations = {
+    return {
       youtube: {
         notes: [
           {
-            title: `Key Insights from "${inputName}"`,
-            content: `This video covers essential ${topic.toLowerCase()} concepts that are fundamental to understanding the field. The presenter breaks down complex ideas into digestible segments, providing practical examples and real-world applications. Key takeaways include implementation strategies, best practices, and common pitfalls to avoid when working in this domain.`,
-            duration: "8 min read"
+            title: `Core Concepts from "${inputName.substring(0, 40)}..."`,
+            content: `• **Main Focus**: ${config.focus}\n• **Key Topics**: ${keyPhrases}\n• **Practical Applications**: ${config.applications}\n\nThis video provides actionable insights that can be immediately applied to real-world scenarios. The content emphasizes practical implementation over theoretical discussion.`,
+            duration: "5 min read"
           },
           {
-            title: `Deep Dive Analysis - ${topic} Fundamentals`,
-            content: `A comprehensive analysis of the core principles discussed in the video. This section explores the theoretical foundations and practical implications of the concepts presented. We examine how these ideas connect to broader industry trends and their relevance to current ${topic.toLowerCase()} practices and methodologies.`,
-            duration: "12 min read"
+            title: `Implementation Strategy`,
+            content: `**Step-by-Step Approach:**\n1. Foundation building with core principles\n2. Practical application through examples\n3. Advanced techniques and optimization\n4. Real-world case studies and scenarios\n\n**Success Metrics:** Clear benchmarks for measuring progress and effectiveness in ${config.displayName.toLowerCase()}.`,
+            duration: "7 min read"
           },
           {
-            title: `Practical Implementation Guide`,
-            content: `Step-by-step guidance on applying the concepts from "${inputName}" in real-world scenarios. This practical guide includes actionable strategies, implementation frameworks, and case studies that demonstrate successful application of the discussed principles in professional ${topic.toLowerCase()} environments.`,
-            duration: "6 min read"
+            title: `Key Takeaways & Action Items`,
+            content: `**Immediate Actions:**\n• Apply the primary methodology discussed\n• Implement the recommended tools/frameworks\n• Practice with the provided examples\n\n**Long-term Goals:**\n• Master the advanced concepts\n• Develop expertise in ${config.displayName.toLowerCase()}\n• Build a portfolio of successful applications`,
+            duration: "4 min read"
           }
         ],
         quizzes: [
           {
-            question: `Based on the video "${inputName.substring(0, 50)}...", what was identified as the most critical factor for success in ${topic.toLowerCase()}?`,
+            question: `What is the primary methodology emphasized in "${inputName.substring(0, 40)}..." for achieving success in ${config.displayName.toLowerCase()}?`,
             options: [
-              "Understanding foundational principles and theory",
-              "Practical hands-on experience and application", 
-              "Staying updated with latest trends and technologies",
-              "Building strong professional networks and mentorship"
+              "Theoretical understanding first, then practical application",
+              "Hands-on practice with immediate real-world implementation", 
+              "Collaborative learning through peer interaction",
+              "Systematic step-by-step progression through fundamentals"
             ],
-            correct: 0,
-            explanation: `The video emphasized that mastering foundational principles in ${topic.toLowerCase()} provides the strongest base for long-term success, as trends change but core concepts remain valuable.`
+            correct: 1,
+            explanation: `The content emphasizes practical, hands-on implementation as the most effective way to master ${config.displayName.toLowerCase()} concepts and achieve meaningful results.`
           },
           {
-            question: `Which approach was recommended for beginners starting in ${topic.toLowerCase()}?`,
+            question: `Which approach is recommended for beginners in ${config.displayName.toLowerCase()}?`,
             options: [
-              "Jump directly into advanced topics",
-              "Start with practical projects immediately",
-              "Build solid theoretical understanding first",
-              "Focus only on the most popular tools"
+              "Start with advanced concepts to understand the big picture",
+              "Focus on memorizing terminology and definitions",
+              "Begin with practical projects and learn concepts through application",
+              "Study theoretical frameworks before any practical work"
             ],
             correct: 2,
-            explanation: `A solid theoretical foundation enables better decision-making and problem-solving as you progress in ${topic.toLowerCase()}, making it the recommended starting approach.`
-          },
-          {
-            question: `What was highlighted as the biggest challenge when scaling ${topic.toLowerCase()} solutions?`,
-            options: [
-              "Technical complexity and system architecture",
-              "Team coordination and communication",
-              "Budget constraints and resource allocation", 
-              "Maintaining quality while increasing speed"
-            ],
-            correct: 3,
-            explanation: `Balancing quality with speed becomes increasingly difficult as ${topic.toLowerCase()} projects scale, requiring careful planning and process optimization.`
+            explanation: `Learning through practical application helps beginners understand concepts in context and build confidence through tangible results in ${config.displayName.toLowerCase()}.`
           }
         ],
         flashcards: [
           { 
-            front: `Core ${topic} Principle`, 
-            back: `Fundamental concept in ${topic.toLowerCase()} that serves as the foundation for more advanced techniques and applications discussed in "${inputName}"`,
-            category: topic
+            front: `${config.displayName} Foundation`, 
+            back: `Core principle from "${inputName}": ${config.focus}`,
+            category: config.displayName
           },
           { 
-            front: `${topic} Best Practice`, 
-            back: `Recommended approach or methodology highlighted in the video for achieving optimal results in ${topic.toLowerCase()} projects`,
-            category: "Best Practices"
+            front: `Implementation Method`, 
+            back: `Practical approach for applying ${config.displayName.toLowerCase()} concepts in real-world scenarios`,
+            category: "Application"
           },
           { 
-            front: `Implementation Strategy`, 
-            back: `Step-by-step approach for applying ${topic.toLowerCase()} concepts in real-world scenarios, as outlined in the video content`,
-            category: "Implementation"
-          },
-          { 
-            front: `${topic} Challenge`, 
-            back: `Common obstacle or difficulty encountered when working with ${topic.toLowerCase()} that was addressed in the video discussion`,
-            category: "Problem Solving"
+            front: `Success Metric`, 
+            back: `Key indicator for measuring progress and effectiveness in ${config.displayName.toLowerCase()} projects`,
+            category: "Measurement"
           }
         ]
       },
       pdf: {
         notes: [
           {
-            title: `Document Overview: "${inputName}"`,
-            content: `Comprehensive summary of the key concepts and findings presented in this ${topic.toLowerCase()} document. The material covers essential theories, methodologies, and practical applications relevant to the field. This overview identifies the main arguments, supporting evidence, and conclusions drawn by the authors.`,
+            title: `Document Analysis: "${inputName.substring(0, 40)}..."`,
+            content: `**Research Focus**: ${config.focus}\n**Methodology**: Evidence-based analysis with practical applications\n**Key Findings**: ${keyPhrases}\n\n**Main Contributions:**\n• Systematic approach to ${config.displayName.toLowerCase()}\n• Practical frameworks for implementation\n• Evidence-based recommendations for ${config.applications}`,
+            duration: "8 min read"
+          },
+          {
+            title: `Critical Insights & Methodology`,
+            content: `**Research Approach:**\n• Comprehensive literature review\n• Empirical data analysis\n• Practical case study validation\n\n**Key Methodologies:**\n1. Systematic data collection and analysis\n2. Evidence-based conclusion development\n3. Practical application testing\n4. Results validation and refinement`,
             duration: "10 min read"
           },
           {
-            title: `Critical Analysis - ${topic} Research`,
-            content: `In-depth analysis of the research methodology, data interpretation, and conclusions presented in "${inputName}". This section examines the validity of the arguments, the strength of the evidence, and the implications for current ${topic.toLowerCase()} practice and future research directions.`,
-            duration: "15 min read"
-          },
-          {
-            title: `Key Concepts and Applications`,
-            content: `Detailed exploration of the fundamental concepts introduced in the document and their practical applications. This section breaks down complex theoretical frameworks into understandable components and demonstrates how they can be applied in professional ${topic.toLowerCase()} contexts.`,
-            duration: "20 min read"
+            title: `Practical Applications & Framework`,
+            content: `**Implementation Framework:**\n• Assessment of current state\n• Strategic planning and goal setting\n• Systematic implementation process\n• Continuous monitoring and optimization\n\n**Expected Outcomes:**\n• Improved efficiency in ${config.displayName.toLowerCase()}\n• Enhanced decision-making capabilities\n• Measurable performance improvements`,
+            duration: "12 min read"
           }
         ],
         quizzes: [
           {
-            question: `According to the document "${inputName.substring(0, 50)}...", what methodology was most effective for ${topic.toLowerCase()} research?`,
+            question: `According to "${inputName.substring(0, 40)}...", what is the most effective methodology for ${config.displayName.toLowerCase()} research?`,
             options: [
-              "Quantitative analysis with statistical validation",
-              "Qualitative research with case study approach", 
-              "Mixed-methods combining multiple data sources",
-              "Experimental design with controlled variables"
+              "Pure theoretical analysis with mathematical modeling",
+              "Empirical research combined with practical validation", 
+              "Observational studies without intervention",
+              "Meta-analysis of existing literature only"
             ],
-            correct: 2,
-            explanation: `The document emphasized that mixed-methods approaches provide the most comprehensive understanding in ${topic.toLowerCase()} research by combining multiple perspectives and data types.`
+            correct: 1,
+            explanation: `The document emphasizes that combining empirical research with practical validation provides the most reliable and applicable results in ${config.displayName.toLowerCase()}.`
           },
           {
-            question: `What was identified as the primary limitation in current ${topic.toLowerCase()} approaches?`,
+            question: `What framework does the research recommend for implementing findings in ${config.displayName.toLowerCase()}?`,
             options: [
-              "Lack of standardized measurement tools",
-              "Insufficient sample sizes in studies",
-              "Limited consideration of contextual factors",
-              "Overreliance on theoretical models"
+              "Immediate full-scale deployment across all areas",
+              "Theoretical validation before any practical application",
+              "Phased implementation with continuous monitoring and adjustment",
+              "Pilot testing in controlled environments only"
             ],
             correct: 2,
-            explanation: `The research highlighted that contextual factors significantly impact ${topic.toLowerCase()} outcomes but are often overlooked in traditional approaches.`
-          },
-          {
-            question: `Which framework was recommended for implementing the document's findings?`,
-            options: [
-              "Systematic implementation with phase-by-phase rollout",
-              "Rapid deployment across all areas simultaneously", 
-              "Pilot testing followed by gradual expansion",
-              "Theoretical validation before practical application"
-            ],
-            correct: 2,
-            explanation: `Pilot testing allows for validation and refinement of ${topic.toLowerCase()} approaches before full-scale implementation, reducing risks and improving outcomes.`
+            explanation: `The research advocates for phased implementation with continuous monitoring to ensure successful adoption and optimization in ${config.displayName.toLowerCase()} contexts.`
           }
         ],
         flashcards: [
           { 
-            front: `${topic} Research Method`, 
-            back: `Primary research methodology discussed in "${inputName}" for investigating ${topic.toLowerCase()} phenomena and generating reliable findings`,
-            category: "Research Methods"
+            front: `Research Methodology`, 
+            back: `Evidence-based approach used in "${inputName}" for investigating ${config.displayName.toLowerCase()} phenomena`,
+            category: "Research"
           },
           { 
-            front: `Key Finding`, 
-            back: `Major discovery or conclusion from the research presented in the document that advances understanding in ${topic.toLowerCase()}`,
-            category: topic
+            front: `Key Framework`, 
+            back: `Systematic approach for implementing ${config.displayName.toLowerCase()} solutions based on the document's findings`,
+            category: "Implementation"
           },
           { 
-            front: `Theoretical Framework`, 
-            back: `Conceptual model or theory used in the document to explain and predict ${topic.toLowerCase()} behaviors and outcomes`,
-            category: "Theory"
+            front: `Critical Finding`, 
+            back: `Major insight from the research that advances understanding in ${config.displayName.toLowerCase()}`,
+            category: config.displayName
           },
           { 
-            front: `Practical Application`, 
-            back: `Real-world use case or implementation strategy for the ${topic.toLowerCase()} concepts described in the research document`,
-            category: "Application"
-          },
-          { 
-            front: `Research Limitation`, 
-            back: `Acknowledged constraint or boundary of the study that affects the generalizability of the ${topic.toLowerCase()} findings`,
-            category: "Critical Analysis"
+            front: `Success Factor`, 
+            back: `Essential element identified in the research for achieving optimal results in ${config.displayName.toLowerCase()}`,
+            category: "Success Metrics"
           }
         ]
       }
-    };
-
-    return contentVariations[sourceType];
+    }[sourceType];
   };
 
   const content = generateContent();
