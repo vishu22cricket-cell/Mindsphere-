@@ -25,6 +25,8 @@ interface CoursePreviewProps {
 
 const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: CoursePreviewProps) => {
   const { toast } = useToast();
+  const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
+  const [showResults, setShowResults] = useState<Record<number, boolean>>({});
   const [chatMessages, setChatMessages] = useState([
     {
       id: 1,
@@ -111,6 +113,11 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
       title: "Course Saved",
       description: "Successfully saved to your dashboard for future access.",
     });
+  };
+
+  const handleQuizAnswer = (quizIndex: number, selectedOption: number) => {
+    setQuizAnswers(prev => ({ ...prev, [quizIndex]: selectedOption }));
+    setShowResults(prev => ({ ...prev, [quizIndex]: true }));
   };
 
   // Generate intelligent content based on input analysis
@@ -246,6 +253,39 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
             ],
             correct: 2,
             explanation: `Learning through practical application helps beginners understand concepts in context and build confidence through tangible results in ${config.displayName.toLowerCase()}.`
+          },
+          {
+            question: `What is the most important success factor mentioned for ${config.displayName.toLowerCase()} projects?`,
+            options: [
+              "Having the latest tools and technology",
+              "Working individually without distractions",
+              "Consistent practice and iterative improvement",
+              "Focusing only on theoretical knowledge"
+            ],
+            correct: 2,
+            explanation: `Consistent practice and iterative improvement are highlighted as key to mastering ${config.displayName.toLowerCase()} and achieving long-term success.`
+          },
+          {
+            question: `How should you measure progress in ${config.displayName.toLowerCase()}?`,
+            options: [
+              "By the number of hours spent studying",
+              "Through practical projects and real-world applications",
+              "By memorizing all theoretical concepts",
+              "Using only peer comparisons"
+            ],
+            correct: 1,
+            explanation: `Progress is best measured through practical projects and real-world applications that demonstrate your ability to apply ${config.displayName.toLowerCase()} concepts effectively.`
+          },
+          {
+            question: `What is the recommended strategy for overcoming challenges in ${config.displayName.toLowerCase()}?`,
+            options: [
+              "Give up and try a different approach",
+              "Stick to one method regardless of results",
+              "Break down problems into smaller, manageable parts",
+              "Always ask for help immediately"
+            ],
+            correct: 2,
+            explanation: `Breaking down complex problems into smaller, manageable parts is a fundamental strategy that makes ${config.displayName.toLowerCase()} challenges more approachable and solvable.`
           }
         ],
         flashcards: [
@@ -306,6 +346,50 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
             ],
             correct: 2,
             explanation: `The research advocates for phased implementation with continuous monitoring to ensure successful adoption and optimization in ${config.displayName.toLowerCase()} contexts.`
+          },
+          {
+            question: `Which phase is most critical for successful ${config.displayName.toLowerCase()} implementation according to the document?`,
+            options: [
+              "Initial planning and goal setting",
+              "Resource allocation and budgeting",
+              "Continuous monitoring and adjustment",
+              "Final evaluation and reporting"
+            ],
+            correct: 2,
+            explanation: `The document emphasizes that continuous monitoring and adjustment throughout the implementation process is crucial for adapting to changing conditions and ensuring success.`
+          },
+          {
+            question: `What does the research identify as the primary success factor for ${config.displayName.toLowerCase()} projects?`,
+            options: [
+              "Having unlimited budget and resources",
+              "Using the most advanced technology available",
+              "Strong leadership commitment and stakeholder engagement",
+              "Following a rigid, unchanging plan"
+            ],
+            correct: 2,
+            explanation: `The research consistently highlights that strong leadership commitment combined with active stakeholder engagement are the most critical factors for project success in ${config.displayName.toLowerCase()}.`
+          },
+          {
+            question: `How should organizations measure the effectiveness of ${config.displayName.toLowerCase()} initiatives?`,
+            options: [
+              "Only through financial metrics",
+              "By comparing to industry averages only",
+              "Using a combination of quantitative and qualitative metrics",
+              "Through subjective management assessment"
+            ],
+            correct: 2,
+            explanation: `The document recommends using both quantitative metrics (like efficiency gains) and qualitative measures (like stakeholder satisfaction) to comprehensively evaluate ${config.displayName.toLowerCase()} effectiveness.`
+          },
+          {
+            question: `What is the recommended approach for scaling ${config.displayName.toLowerCase()} solutions across an organization?`,
+            options: [
+              "Implement everywhere simultaneously for maximum impact",
+              "Start with pilot programs and gradually expand based on results",
+              "Focus only on the most visible departments first",
+              "Wait until perfect before any implementation"
+            ],
+            correct: 1,
+            explanation: `The research strongly advocates for starting with pilot programs to validate approaches and learn lessons before scaling, ensuring higher success rates in ${config.displayName.toLowerCase()} implementations.`
           }
         ],
         flashcards: [
@@ -418,41 +502,74 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="font-medium mb-4 text-foreground">{quiz.question}</p>
-                    <div className="space-y-3">
-                      {quiz.options.map((option, optIndex) => (
-                        <div 
-                          key={optIndex} 
-                          className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-                            optIndex === quiz.correct 
-                              ? "bg-green-50 border-green-300 text-green-800 shadow-sm" 
-                              : "bg-card border-border/50 hover:border-primary/30 hover:bg-accent/30"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium ${
-                              optIndex === quiz.correct 
-                                ? "bg-green-200 text-green-800" 
-                                : "bg-muted text-muted-foreground"
-                            }`}>
-                              {String.fromCharCode(65 + optIndex)}
-                            </span>
-                            <span className="flex-1">{option}</span>
-                            {optIndex === quiz.correct && (
-                              <CheckCircle className="w-5 h-5 text-green-600" />
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    {quiz.explanation && (
-                      <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-sm text-blue-800">
-                          <strong>Explanation:</strong> {quiz.explanation}
-                        </p>
-                      </div>
-                    )}
+                   <CardContent>
+                     <p className="font-medium mb-4 text-foreground">{quiz.question}</p>
+                     <div className="space-y-3">
+                       {quiz.options.map((option, optIndex) => {
+                         const isSelected = quizAnswers[index] === optIndex;
+                         const isCorrect = optIndex === quiz.correct;
+                         const showResult = showResults[index];
+                         
+                         return (
+                           <div 
+                             key={optIndex} 
+                             className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                               showResult
+                                 ? isCorrect 
+                                   ? "bg-green-50 border-green-300 text-green-800 shadow-sm" 
+                                   : isSelected 
+                                     ? "bg-red-50 border-red-300 text-red-800 shadow-sm"
+                                     : "bg-card border-border/50"
+                                 : isSelected
+                                   ? "bg-primary/10 border-primary text-primary"
+                                   : "bg-card border-border/50 hover:border-primary/30 hover:bg-accent/30"
+                             }`}
+                             onClick={() => handleQuizAnswer(index, optIndex)}
+                           >
+                             <div className="flex items-center gap-3">
+                               <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium ${
+                                 showResult
+                                   ? isCorrect 
+                                     ? "bg-green-200 text-green-800" 
+                                     : isSelected 
+                                       ? "bg-red-200 text-red-800"
+                                       : "bg-muted text-muted-foreground"
+                                   : isSelected
+                                     ? "bg-primary text-primary-foreground"
+                                     : "bg-muted text-muted-foreground"
+                               }`}>
+                                 {String.fromCharCode(65 + optIndex)}
+                               </span>
+                               <span className="flex-1">{option}</span>
+                               {showResult && isCorrect && (
+                                 <CheckCircle className="w-5 h-5 text-green-600" />
+                               )}
+                               {showResult && isSelected && !isCorrect && (
+                                 <div className="w-5 h-5 text-red-600">✗</div>
+                               )}
+                             </div>
+                           </div>
+                         );
+                       })}
+                     </div>
+                     {showResults[index] && quiz.explanation && (
+                       <div className={`mt-4 p-4 border rounded-lg ${
+                         quizAnswers[index] === quiz.correct 
+                           ? "bg-green-50 border-green-200" 
+                           : "bg-blue-50 border-blue-200"
+                       }`}>
+                         <p className={`text-sm ${
+                           quizAnswers[index] === quiz.correct 
+                             ? "text-green-800" 
+                             : "text-blue-800"
+                         }`}>
+                           <strong>
+                             {quizAnswers[index] === quiz.correct ? "Correct! " : "Incorrect. "}
+                           </strong>
+                           {quiz.explanation}
+                         </p>
+                       </div>
+                     )}
                   </CardContent>
                 </Card>
               ))}
