@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Brain, Menu, X, Maximize, Minimize } from "lucide-react";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -19,8 +21,7 @@ const Navigation = () => {
   };
 
   const handleSignIn = () => {
-    // For now, navigate to dashboard as a placeholder
-    window.location.href = "/dashboard";
+    navigate("/dashboard");
   };
 
   const handleGetStarted = () => {
@@ -52,15 +53,29 @@ const Navigation = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="text-foreground hover:text-primary transition-colors font-medium"
-              >
-                {item.label}
-              </a>
-            ))}
+            {navItems.map((item) => {
+              if (item.href.startsWith('#')) {
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    className="text-foreground hover:text-primary transition-colors font-medium"
+                  >
+                    {item.label}
+                  </a>
+                );
+              } else {
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    className="text-foreground hover:text-primary transition-colors font-medium"
+                  >
+                    {item.label}
+                  </Link>
+                );
+              }
+            })}
           </div>
 
           {/* Desktop CTA */}
@@ -92,16 +107,31 @@ const Navigation = () => {
         {isMenuOpen && (
           <div className="md:hidden border-t border-border bg-white/95 backdrop-blur-sm">
             <div className="py-4 space-y-4">
-              {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="block px-4 py-2 text-foreground hover:text-primary transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.label}
-                </a>
-              ))}
+              {navItems.map((item) => {
+                if (item.href.startsWith('#')) {
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className="block px-4 py-2 text-foreground hover:text-primary transition-colors font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.label}
+                    </a>
+                  );
+                } else {
+                  return (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      className="block px-4 py-2 text-foreground hover:text-primary transition-colors font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                }
+              })}
               <div className="px-4 pt-4 space-y-2">
                 <Button
                   variant="ghost"
