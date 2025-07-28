@@ -269,19 +269,19 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
       pdf: {
         notes: [
           {
-            title: `Document Analysis: "${inputName.substring(0, 40)}..."`,
-            content: `**Research Focus**: ${config.focus}\n**Methodology**: Evidence-based analysis with practical applications\n**Key Findings**: ${keyPhrases}\n\n**Main Contributions:**\n• Systematic approach to ${config.displayName.toLowerCase()}\n• Practical frameworks for implementation\n• Evidence-based recommendations for ${config.applications}`,
+            title: `Chapter 1: Introduction to ${config.displayName}`,
+            content: `## Overview\nThis document provides a comprehensive introduction to ${config.displayName.toLowerCase()}, focusing on ${config.focus}.\n\n## Learning Objectives\nBy the end of this chapter, you will understand:\n• Fundamental concepts and terminology\n• Core principles underlying ${config.displayName.toLowerCase()}\n• Real-world applications and use cases\n\n## Key Concepts\n**Definition**: ${config.displayName} encompasses the study and application of ${config.focus}.\n\n**Importance**: Understanding these concepts is crucial for ${config.applications}.\n\n**Applications**: This knowledge directly applies to:\n• Problem-solving in professional environments\n• Strategic decision-making processes\n• Innovation and improvement initiatives`,
             duration: "8 min read"
           },
           {
-            title: `Critical Insights & Methodology`,
-            content: `**Research Approach:**\n• Comprehensive literature review\n• Empirical data analysis\n• Practical case study validation\n\n**Key Methodologies:**\n1. Systematic data collection and analysis\n2. Evidence-based conclusion development\n3. Practical application testing\n4. Results validation and refinement`,
-            duration: "10 min read"
+            title: `Chapter 2: Core Methodology & Framework`,
+            content: `## Theoretical Foundation\nThe document establishes a systematic approach to ${config.displayName.toLowerCase()} through evidence-based methodologies.\n\n## Step-by-Step Framework\n\n### Phase 1: Assessment & Planning\n1. **Current State Analysis**\n   - Evaluate existing conditions\n   - Identify gaps and opportunities\n   - Set measurable objectives\n\n2. **Strategic Planning**\n   - Define clear goals and success metrics\n   - Develop implementation timeline\n   - Allocate necessary resources\n\n### Phase 2: Implementation\n3. **Systematic Execution**\n   - Follow structured methodology\n   - Apply best practices consistently\n   - Monitor progress continuously\n\n4. **Quality Assurance**\n   - Validate results against objectives\n   - Make data-driven adjustments\n   - Document lessons learned\n\n## Best Practices\n• Maintain clear documentation throughout the process\n• Engage stakeholders at each critical phase\n• Use quantitative metrics to measure success\n• Adapt approach based on emerging insights`,
+            duration: "12 min read"
           },
           {
-            title: `Practical Applications & Framework`,
-            content: `**Implementation Framework:**\n• Assessment of current state\n• Strategic planning and goal setting\n• Systematic implementation process\n• Continuous monitoring and optimization\n\n**Expected Outcomes:**\n• Improved efficiency in ${config.displayName.toLowerCase()}\n• Enhanced decision-making capabilities\n• Measurable performance improvements`,
-            duration: "12 min read"
+            title: `Chapter 3: Practical Implementation & Results`,
+            content: `## Real-World Applications\nThis chapter demonstrates how theoretical concepts translate into practical solutions for ${config.applications}.\n\n## Case Study Analysis\n\n### Successful Implementation Example\n**Context**: Organizations applying ${config.displayName.toLowerCase()} principles\n**Challenge**: Need to improve efficiency and outcomes\n**Solution**: Systematic application of documented framework\n**Results**: Measurable improvements in key performance indicators\n\n### Key Success Factors\n1. **Leadership Commitment**\n   - Strong support from decision-makers\n   - Clear communication of objectives\n   - Adequate resource allocation\n\n2. **Systematic Approach**\n   - Following established methodology\n   - Regular progress monitoring\n   - Continuous improvement mindset\n\n3. **Stakeholder Engagement**\n   - Active participation from all levels\n   - Clear role definitions\n   - Regular feedback mechanisms\n\n## Expected Outcomes\nProper implementation typically results in:\n• **Efficiency Gains**: 15-30% improvement in process performance\n• **Quality Enhancement**: Reduction in errors and rework\n• **Knowledge Transfer**: Improved team capabilities and understanding\n• **Sustainable Results**: Long-term benefits through embedded practices\n\n## Next Steps\n• Apply learned concepts to current projects\n• Develop implementation plan using provided framework\n• Establish monitoring and evaluation system\n• Build capabilities for continuous improvement`,
+            duration: "15 min read"
           }
         ],
         quizzes: [
