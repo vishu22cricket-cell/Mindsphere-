@@ -1,9 +1,35 @@
 import { Button } from "@/components/ui/button";
-import { Brain, Menu, X } from "lucide-react";
+import { Brain, Menu, X, Maximize, Minimize } from "lucide-react";
 import { useState } from "react";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      });
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+      });
+    }
+  };
+
+  const handleSignIn = () => {
+    // For now, navigate to dashboard as a placeholder
+    window.location.href = "/dashboard";
+  };
+
+  const handleGetStarted = () => {
+    // Scroll to upload section
+    const uploadSection = document.getElementById('upload-section');
+    if (uploadSection) {
+      uploadSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const navItems = [
     { label: "Features", href: "#features" },
@@ -39,8 +65,16 @@ const Navigation = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="ghost">Sign In</Button>
-            <Button variant="hero">Get Started</Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleFullscreen}
+              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            >
+              {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+            </Button>
+            <Button variant="ghost" onClick={handleSignIn}>Sign In</Button>
+            <Button variant="hero" onClick={handleGetStarted}>Get Started</Button>
           </div>
 
           {/* Mobile menu button */}
@@ -69,8 +103,15 @@ const Navigation = () => {
                 </a>
               ))}
               <div className="px-4 pt-4 space-y-2">
-                <Button variant="ghost" className="w-full">Sign In</Button>
-                <Button variant="hero" className="w-full">Get Started</Button>
+                <Button
+                  variant="ghost"
+                  onClick={toggleFullscreen}
+                  className="w-full"
+                >
+                  {isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                </Button>
+                <Button variant="ghost" className="w-full" onClick={handleSignIn}>Sign In</Button>
+                <Button variant="hero" className="w-full" onClick={handleGetStarted}>Get Started</Button>
               </div>
             </div>
           </div>
