@@ -217,17 +217,37 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
         notes: [
           {
             title: `Core Concepts from "${inputName.substring(0, 40)}..."`,
-            content: `• **Main Focus**: ${config.focus}\n• **Key Topics**: ${keyPhrases}\n• **Practical Applications**: ${config.applications}\n\nThis video provides actionable insights that can be immediately applied to real-world scenarios. The content emphasizes practical implementation over theoretical discussion.`,
+            content: `Main Focus: ${config.focus}
+
+Key Topics: ${keyPhrases}
+
+Practical Applications: ${config.applications}
+
+This video provides actionable insights that can be immediately applied to real-world scenarios. The content emphasizes practical implementation over theoretical discussion.`,
             duration: "5 min read"
           },
           {
             title: `Implementation Strategy`,
-            content: `**Step-by-Step Approach:**\n1. Foundation building with core principles\n2. Practical application through examples\n3. Advanced techniques and optimization\n4. Real-world case studies and scenarios\n\n**Success Metrics:** Clear benchmarks for measuring progress and effectiveness in ${config.displayName.toLowerCase()}.`,
+            content: `Step-by-Step Approach:
+1. Foundation building with core principles
+2. Practical application through examples
+3. Advanced techniques and optimization
+4. Real-world case studies and scenarios
+
+Success Metrics: Clear benchmarks for measuring progress and effectiveness in ${config.displayName.toLowerCase()}.`,
             duration: "7 min read"
           },
           {
             title: `Key Takeaways & Action Items`,
-            content: `**Immediate Actions:**\n• Apply the primary methodology discussed\n• Implement the recommended tools/frameworks\n• Practice with the provided examples\n\n**Long-term Goals:**\n• Master the advanced concepts\n• Develop expertise in ${config.displayName.toLowerCase()}\n• Build a portfolio of successful applications`,
+            content: `Immediate Actions:
+• Apply the primary methodology discussed
+• Implement the recommended tools/frameworks
+• Practice with the provided examples
+
+Long-term Goals:
+• Master the advanced concepts
+• Develop expertise in ${config.displayName.toLowerCase()}
+• Build a portfolio of successful applications`,
             duration: "4 min read"
           }
         ],
@@ -310,12 +330,60 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
         notes: [
           {
             title: `Chapter 1: Introduction to ${config.displayName}`,
-            content: `## Overview\nThis document provides a comprehensive introduction to ${config.displayName.toLowerCase()}, focusing on ${config.focus}.\n\n## Learning Objectives\nBy the end of this chapter, you will understand:\n• Fundamental concepts and terminology\n• Core principles underlying ${config.displayName.toLowerCase()}\n• Real-world applications and use cases\n\n## Key Concepts\n**Definition**: ${config.displayName} encompasses the study and application of ${config.focus}.\n\n**Importance**: Understanding these concepts is crucial for ${config.applications}.\n\n**Applications**: This knowledge directly applies to:\n• Problem-solving in professional environments\n• Strategic decision-making processes\n• Innovation and improvement initiatives`,
+            content: `Overview
+This document provides a comprehensive introduction to ${config.displayName.toLowerCase()}, focusing on ${config.focus}.
+
+Learning Objectives
+By the end of this chapter, you will understand:
+• Fundamental concepts and terminology
+• Core principles underlying ${config.displayName.toLowerCase()}
+• Real-world applications and use cases
+
+Key Concepts
+Definition: ${config.displayName} encompasses the study and application of ${config.focus}.
+
+Importance: Understanding these concepts is crucial for ${config.applications}.
+
+Applications: This knowledge directly applies to:
+• Problem-solving in professional environments
+• Strategic decision-making processes
+• Innovation and improvement initiatives`,
             duration: "8 min read"
           },
           {
             title: `Chapter 2: Core Methodology & Framework`,
-            content: `## Theoretical Foundation\nThe document establishes a systematic approach to ${config.displayName.toLowerCase()} through evidence-based methodologies.\n\n## Step-by-Step Framework\n\n### Phase 1: Assessment & Planning\n1. **Current State Analysis**\n   - Evaluate existing conditions\n   - Identify gaps and opportunities\n   - Set measurable objectives\n\n2. **Strategic Planning**\n   - Define clear goals and success metrics\n   - Develop implementation timeline\n   - Allocate necessary resources\n\n### Phase 2: Implementation\n3. **Systematic Execution**\n   - Follow structured methodology\n   - Apply best practices consistently\n   - Monitor progress continuously\n\n4. **Quality Assurance**\n   - Validate results against objectives\n   - Make data-driven adjustments\n   - Document lessons learned\n\n## Best Practices\n• Maintain clear documentation throughout the process\n• Engage stakeholders at each critical phase\n• Use quantitative metrics to measure success\n• Adapt approach based on emerging insights`,
+            content: `Theoretical Foundation
+The document establishes a systematic approach to ${config.displayName.toLowerCase()} through evidence-based methodologies.
+
+Step-by-Step Framework
+
+Phase 1: Assessment & Planning
+1. Current State Analysis
+   • Evaluate existing conditions
+   • Identify gaps and opportunities
+   • Set measurable objectives
+
+2. Strategic Planning
+   • Define clear goals and success metrics
+   • Develop implementation timeline
+   • Allocate necessary resources
+
+Phase 2: Implementation
+3. Systematic Execution
+   • Follow structured methodology
+   • Apply best practices consistently
+   • Monitor progress continuously
+
+4. Quality Assurance
+   • Validate results against objectives
+   • Make data-driven adjustments
+   • Document lessons learned
+
+Best Practices
+• Maintain clear documentation throughout the process
+• Engage stakeholders at each critical phase
+• Use quantitative metrics to measure success
+• Adapt approach based on emerging insights`,
             duration: "12 min read"
           },
           {
