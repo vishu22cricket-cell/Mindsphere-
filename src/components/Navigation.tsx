@@ -21,7 +21,8 @@ const Navigation = () => {
   };
 
   const handleSignIn = () => {
-    navigate("/dashboard");
+    // Don't automatically navigate, let the AuthModal handle authentication
+    console.log("Sign in clicked - AuthModal will handle this");
   };
 
   const handleGetStarted = () => {
