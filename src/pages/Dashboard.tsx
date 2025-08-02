@@ -24,42 +24,52 @@ import {
   Target,
   Zap
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import AuthModal from "@/components/AuthModal";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import AIChatAssistant from "@/components/AIChatAssistant";
 import CourseManager from "@/components/CourseManager";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  plan: string;
-  joinedDate: string;
-}
 
 const Dashboard = () => {
-  const [user, setUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
-  const navigate = useNavigate();
+  const [profile, setProfile] = useState<any>(null);
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already logged in (simulate with localStorage)
-    const savedUser = localStorage.getItem("edusynth_user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    if (user) {
+      fetchProfile();
     }
-  }, []);
+  }, [user]);
 
-  const handleAuthSuccess = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem("edusynth_user", JSON.stringify(userData));
+  const fetchProfile = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching profile:', error);
+      return;
+    }
+
+    setProfile(data);
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem("edusynth_user");
-    navigate("/");
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const recentCourses = [
@@ -131,32 +141,6 @@ const Dashboard = () => {
     { title: "Course Creator Pro", icon: "⭐", unlocked: false },
   ];
 
-  // If user is not logged in, show sign-in prompt
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-8 text-center">
-            <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
-              <Brain className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold mb-2">Welcome to EduSynth</h1>
-            <p className="text-muted-foreground mb-6">
-              Sign in to access your personalized learning dashboard
-            </p>
-            <AuthModal onAuthSuccess={handleAuthSuccess}>
-              <Button size="lg" className="w-full">
-                Sign In to Continue
-              </Button>
-            </AuthModal>
-            <p className="text-sm text-muted-foreground mt-4">
-              Don't have an account? Sign up is included in the modal above.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -164,13 +148,13 @@ const Dashboard = () => {
       <header className="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-6">
               <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
                   <Brain className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">EduSynth</span>
+                  <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Course Alchemy</span>
                   <p className="text-xs text-muted-foreground">Dashboard</p>
                 </div>
               </Link>
@@ -204,16 +188,18 @@ const Dashboard = () => {
               
               <div className="flex items-center gap-3 pl-3 border-l border-border">
                 <div className="text-right hidden sm:block">
-                  <p className="text-sm font-medium">{user.name}</p>
-                  <p className="text-xs text-muted-foreground">{user.plan} Plan</p>
+                  <p className="text-sm font-medium">
+                    {profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Free Plan</p>
                 </div>
                 <Avatar className="ring-2 ring-primary/20">
-                  <AvatarImage src={user.avatar} />
+                  <AvatarImage src={profile?.avatar_url || user?.user_metadata?.avatar_url} />
                   <AvatarFallback className="bg-gradient-primary text-white font-medium">
-                    {user.name.split(' ').map(n => n[0]).join('')}
+                    {profile?.full_name?.[0] || user?.user_metadata?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                   </AvatarFallback>
                 </Avatar>
-                <Button size="icon" variant="ghost" onClick={handleLogout} className="text-muted-foreground hover:text-destructive">
+                <Button size="icon" variant="ghost" onClick={handleSignOut} className="text-muted-foreground hover:text-destructive">
                   <LogOut className="w-4 h-4" />
                 </Button>
               </div>
@@ -230,14 +216,16 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
-                  Welcome back, {user.name.split(' ')[0]}! 👋
+                  Welcome back, {profile?.full_name?.split(' ')[0] || user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User'}! 👋
                 </h1>
                 <p className="text-muted-foreground text-lg">Here's what's happening with your learning journey today.</p>
               </div>
               <div className="hidden lg:block">
                 <div className="text-right">
                   <p className="text-sm text-muted-foreground">Member since</p>
-                  <p className="text-lg font-semibold">{user.joinedDate}</p>
+                  <p className="text-lg font-semibold">
+                    {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Today'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -461,7 +449,7 @@ const Dashboard = () => {
                     <label className="text-sm font-medium">Full Name</label>
                     <input 
                       type="text" 
-                      value={user.name} 
+                      value={profile?.full_name || user?.user_metadata?.full_name || ''} 
                       className="w-full mt-1 px-3 py-2 border border-border rounded-lg"
                       readOnly
                     />
@@ -470,7 +458,7 @@ const Dashboard = () => {
                     <label className="text-sm font-medium">Email</label>
                     <input 
                       type="email" 
-                      value={user.email} 
+                      value={user?.email || ''} 
                       className="w-full mt-1 px-3 py-2 border border-border rounded-lg"
                       readOnly
                     />
@@ -478,7 +466,7 @@ const Dashboard = () => {
                   <div>
                     <label className="text-sm font-medium">Plan</label>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary">{user.plan}</Badge>
+                      <Badge variant="secondary">Free Plan</Badge>
                       <Button size="sm" variant="outline">Upgrade</Button>
                     </div>
                   </div>

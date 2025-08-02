@@ -21,8 +21,7 @@ const Navigation = () => {
   };
 
   const handleSignIn = () => {
-    // Don't automatically navigate, let the AuthModal handle authentication
-    console.log("Sign in clicked - AuthModal will handle this");
+    window.location.href = '/auth';
   };
 
   const handleGetStarted = () => {
