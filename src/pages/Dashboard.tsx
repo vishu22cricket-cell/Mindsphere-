@@ -161,44 +161,59 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-white/95 backdrop-blur-sm sticky top-0 z-40">
+      <header className="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link to="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-6">
+              <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
+                  <Brain className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-xl font-bold">EduSynth</span>
+                <div>
+                  <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">EduSynth</span>
+                  <p className="text-xs text-muted-foreground">Dashboard</p>
+                </div>
               </Link>
-              <span className="text-muted-foreground">/</span>
-              <span className="font-medium">Dashboard</span>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                asChild
+                className="hidden sm:flex"
+              >
+                <Link to="/">
+                  ← Back to Website
+                </Link>
+              </Button>
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="relative">
+              <div className="relative hidden md:block">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                 <input 
                   type="text" 
                   placeholder="Search courses..." 
-                  className="pl-10 pr-4 py-2 border border-border rounded-lg text-sm w-64 focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="pl-10 pr-4 py-2 border border-border rounded-xl text-sm w-64 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background transition-all"
                 />
               </div>
               
-              <Button size="icon" variant="ghost">
+              <Button size="icon" variant="ghost" className="relative">
                 <Bell className="w-4 h-4" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
               </Button>
               
-              <div className="flex items-center gap-3">
-                <div className="text-right">
+              <div className="flex items-center gap-3 pl-3 border-l border-border">
+                <div className="text-right hidden sm:block">
                   <p className="text-sm font-medium">{user.name}</p>
                   <p className="text-xs text-muted-foreground">{user.plan} Plan</p>
                 </div>
-                <Avatar>
+                <Avatar className="ring-2 ring-primary/20">
                   <AvatarImage src={user.avatar} />
-                  <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  <AvatarFallback className="bg-gradient-primary text-white font-medium">
+                    {user.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
                 </Avatar>
-                <Button size="icon" variant="ghost" onClick={handleLogout}>
+                <Button size="icon" variant="ghost" onClick={handleLogout} className="text-muted-foreground hover:text-destructive">
                   <LogOut className="w-4 h-4" />
                 </Button>
               </div>
@@ -209,33 +224,48 @@ const Dashboard = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Welcome back, {user.name.split(' ')[0]}! 👋</h1>
-          <p className="text-muted-foreground">Here's what's happening with your learning journey today.</p>
+        <div className="mb-8 relative">
+          <div className="absolute inset-0 bg-gradient-primary opacity-5 rounded-3xl"></div>
+          <div className="relative p-8 rounded-3xl border border-border/50">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
+                  Welcome back, {user.name.split(' ')[0]}! 👋
+                </h1>
+                <p className="text-muted-foreground text-lg">Here's what's happening with your learning journey today.</p>
+              </div>
+              <div className="hidden lg:block">
+                <div className="text-right">
+                  <p className="text-sm text-muted-foreground">Member since</p>
+                  <p className="text-lg font-semibold">{user.joinedDate}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Tabs Navigation */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid bg-muted/30 p-1 rounded-2xl">
+            <TabsTrigger value="overview" className="flex items-center gap-2 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <BarChart3 className="w-4 h-4" />
-              Overview
+              <span className="hidden sm:inline">Overview</span>
             </TabsTrigger>
-            <TabsTrigger value="courses" className="flex items-center gap-2">
+            <TabsTrigger value="courses" className="flex items-center gap-2 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <BookOpen className="w-4 h-4" />
-              Courses
+              <span className="hidden sm:inline">Courses</span>
             </TabsTrigger>
-            <TabsTrigger value="ai-chat" className="flex items-center gap-2">
+            <TabsTrigger value="ai-chat" className="flex items-center gap-2 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <MessageSquare className="w-4 h-4" />
-              AI Assistant
+              <span className="hidden sm:inline">AI Assistant</span>
             </TabsTrigger>
-            <TabsTrigger value="achievements" className="flex items-center gap-2">
+            <TabsTrigger value="achievements" className="flex items-center gap-2 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <Target className="w-4 h-4" />
-              Achievements
+              <span className="hidden sm:inline">Achievements</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
+            <TabsTrigger value="settings" className="flex items-center gap-2 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-sm">
               <Settings className="w-4 h-4" />
-              Settings
+              <span className="hidden sm:inline">Settings</span>
             </TabsTrigger>
           </TabsList>
 
@@ -243,15 +273,15 @@ const Dashboard = () => {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {stats.map((stat, index) => (
-                <Card key={index} className="hover:shadow-card transition-shadow">
+                <Card key={index} className="hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-border/50 bg-gradient-to-br from-background to-muted/20">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">{stat.label}</p>
-                        <p className="text-2xl font-bold mt-1">{stat.value}</p>
-                        <p className="text-xs text-green-600 mt-1">{stat.change}</p>
+                      <div className="flex-1">
+                        <p className="text-sm text-muted-foreground font-medium">{stat.label}</p>
+                        <p className="text-3xl font-bold mt-2 bg-gradient-primary bg-clip-text text-transparent">{stat.value}</p>
+                        <p className="text-xs text-green-600 mt-2 font-medium">{stat.change}</p>
                       </div>
-                      <div className={`${stat.color}`}>
+                      <div className={`${stat.color} bg-muted/30 p-3 rounded-xl`}>
                         {stat.icon}
                       </div>
                     </div>
