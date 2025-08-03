@@ -21,9 +21,10 @@ interface CoursePreviewProps {
   courseTitle: string;
   sourceType: "youtube" | "pdf";
   inputContent?: string; // URL or file name
+  generatedContent?: any; // AI-generated content
 }
 
-const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: CoursePreviewProps) => {
+const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent, generatedContent }: CoursePreviewProps) => {
   const { toast } = useToast();
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState<Record<number, boolean>>({});
@@ -120,8 +121,24 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
     setShowResults(prev => ({ ...prev, [quizIndex]: true }));
   };
 
-  // Generate intelligent content based on input analysis
-  const generateContent = () => {
+  // Use AI-generated content if available, otherwise fall back to generated content
+  const getCourseContent = () => {
+    if (generatedContent) {
+      return {
+        notes: generatedContent.notes || [],
+        quizzes: generatedContent.quizzes || [],
+        flashcards: generatedContent.flashcards || []
+      };
+    }
+    
+    // Fallback to generated content if no AI content
+    return generateContent();
+  };
+
+  const courseContent = getCourseContent();
+
+  // Generate intelligent content based on input analysis (fallback)
+  function generateContent() {
     const input = inputContent?.toLowerCase() || courseTitle.toLowerCase();
     
     // Advanced topic detection with keywords
@@ -207,12 +224,12 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent }: Cou
         displayName: 'General Knowledge',
         focus: 'core concepts, fundamental principles, and practical applications',
         applications: 'skill development, knowledge building, and practical implementation'
-      }
+       }
     };
 
     const config = topicConfigs[detectedTopic];
 
-    return {
+    const content = {
       youtube: {
         notes: [
           {
@@ -615,13 +632,15 @@ Best Practices
           }
         ]
       }
-    }[sourceType];
-  };
+    };
+    
+    return sourceType === 'youtube' ? content.youtube : content.pdf;
+  }
 
-  const content = generateContent();
-  const mockNotes = content.notes;
-  const mockQuizzes = content.quizzes;
-  const mockFlashcards = content.flashcards;
+  const content = getCourseContent();
+  const mockNotes = content.notes || courseContent.notes;
+  const mockQuizzes = content.quizzes || courseContent.quizzes;
+  const mockFlashcards = content.flashcards || courseContent.flashcards;
 
   return (
     <div className="mt-8 animate-fade-in">

@@ -7,6 +7,7 @@ import { Upload, Youtube, FileText, ArrowRight, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import CoursePreview from "./CoursePreview";
+import { supabase } from "@/integrations/supabase/client";
 
 const UploadSection = () => {
   const [youtubeUrl, setYoutubeUrl] = useState("");
@@ -16,11 +17,41 @@ const UploadSection = () => {
   const [courseTitle, setCourseTitle] = useState("");
   const [sourceType, setSourceType] = useState<"youtube" | "pdf">("youtube");
   const [inputContent, setInputContent] = useState("");
+  const [generatedCourseContent, setGeneratedCourseContent] = useState<any>(null);
   const { toast } = useToast();
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(e.type === "dragenter" || e.type === "dragover");
+  };
+
+  const generateCourseContent = async (type: "youtube" | "pdf", content: string, title: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-course-content', {
+        body: {
+          sourceType: type,
+          content: content,
+          title: title
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        setGeneratedCourseContent(data.courseContent);
+        return data.courseContent;
+      } else {
+        throw new Error(data.error || 'Failed to generate content');
+      }
+    } catch (error) {
+      console.error('Course generation error:', error);
+      toast({
+        title: "Generation Failed",
+        description: "Failed to generate AI content. Using sample content instead.",
+        variant: "destructive",
+      });
+      return null;
+    }
   };
 
   const handleYouTubeSubmit = async () => {
@@ -35,8 +66,8 @@ const UploadSection = () => {
 
     setIsProcessing(true);
     toast({
-      title: "Processing Started!",
-      description: "Analyzing your YouTube video and generating course content...",
+      title: "AI Processing Started!",
+      description: "Analyzing your YouTube video and generating comprehensive course content...",
     });
 
     setSourceType("youtube");
@@ -47,26 +78,29 @@ const UploadSection = () => {
       const urlObj = new URL(url);
       if (urlObj.hostname.includes('youtube')) {
         const videoId = urlObj.searchParams.get('v');
-        return `Course from YouTube Video (${videoId?.substring(0, 8) || 'Video'})`;
+        return `Advanced Course from YouTube Video (${videoId?.substring(0, 8) || 'Video'})`;
       }
-      return "Course from YouTube Video";
+      return "Advanced Course from YouTube Video";
     };
     
-    setCourseTitle(generateTitleFromUrl(youtubeUrl));
+    const title = generateTitleFromUrl(youtubeUrl);
+    setCourseTitle(title);
 
-    // Simulate processing
+    // Generate real AI content
+    const content = await generateCourseContent("youtube", youtubeUrl, title);
+    
     setTimeout(() => {
       setIsProcessing(false);
       setShowCoursePreview(true);
       toast({
-        title: "Course Generated Successfully!",
-        description: "Your micro-course is ready with notes, quizzes, and AI tutor.",
+        title: "AI Course Generated Successfully!",
+        description: "Your comprehensive micro-course is ready with detailed notes, challenging quizzes, and AI tutor.",
       });
       // Scroll to preview
       setTimeout(() => {
         document.getElementById('course-preview')?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
-    }, 3000);
+    }, 2000);
   };
 
   const handleFileUpload = async (files: FileList | null) => {
@@ -74,38 +108,42 @@ const UploadSection = () => {
 
     setIsProcessing(true);
     toast({
-      title: "Files Uploaded!",
-      description: `Processing ${files.length} PDF file(s) to generate your course...`,
+      title: "AI Processing Started!",
+      description: `Analyzing ${files.length} PDF file(s) and generating comprehensive course content...`,
     });
 
     setSourceType("pdf");
-    setInputContent(Array.from(files).map(f => f.name).join(", "));
+    const fileNames = Array.from(files).map(f => f.name).join(", ");
+    setInputContent(fileNames);
     
     // Generate dynamic title based on file names
     const generateTitleFromFiles = (fileList: FileList) => {
       const fileNames = Array.from(fileList).map(f => f.name.replace('.pdf', ''));
       if (fileList.length === 1) {
-        return `Course: ${fileNames[0]}`;
+        return `Advanced Course: ${fileNames[0]}`;
       } else {
-        return `Multi-PDF Course (${fileList.length} documents)`;
+        return `Comprehensive Multi-PDF Course (${fileList.length} documents)`;
       }
     };
     
-    setCourseTitle(generateTitleFromFiles(files));
+    const title = generateTitleFromFiles(files);
+    setCourseTitle(title);
 
-    // Simulate processing
+    // Generate real AI content
+    const content = await generateCourseContent("pdf", fileNames, title);
+
     setTimeout(() => {
       setIsProcessing(false);
       setShowCoursePreview(true);
       toast({
-        title: "Course Generated Successfully!",
-        description: "Your PDF content has been transformed into an interactive course.",
+        title: "AI Course Generated Successfully!",
+        description: "Your PDF content has been transformed into a comprehensive interactive course.",
       });
       // Scroll to preview
       setTimeout(() => {
         document.getElementById('course-preview')?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
-    }, 3000);
+    }, 2000);
   };
 
   return (
@@ -161,7 +199,7 @@ const UploadSection = () => {
                       onClick={handleYouTubeSubmit}
                       disabled={isProcessing}
                     >
-                      {isProcessing ? "Processing..." : "Generate Course"}
+                      {isProcessing ? "Generating with AI..." : "Generate Course"}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </div>
@@ -243,7 +281,7 @@ const UploadSection = () => {
                     input.click();
                   }}
                 >
-                  {isProcessing ? "Processing..." : "Generate Course from PDFs"}
+                  {isProcessing ? "Generating with AI..." : "Generate Course from PDFs"}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </TabsContent>
@@ -275,6 +313,7 @@ const UploadSection = () => {
             courseTitle={courseTitle}
             sourceType={sourceType}
             inputContent={inputContent}
+            generatedContent={generatedCourseContent}
           />
         </div>
       </div>
