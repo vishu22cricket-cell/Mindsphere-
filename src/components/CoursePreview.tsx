@@ -743,9 +743,24 @@ Best Practices
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">{note.content}</p>
-                  </CardContent>
+                   <CardContent>
+                     <div className="prose prose-sm max-w-none space-y-3">
+                       <div className="text-muted-foreground leading-relaxed">
+                         {note.content.split('\n').map((line, lineIndex) => (
+                           <div key={lineIndex} className="mb-2">
+                             {line.startsWith('•') ? (
+                               <div className="flex items-start gap-2 ml-2">
+                                 <span className="text-primary mt-1.5">•</span>
+                                 <span>{line.substring(1).trim()}</span>
+                               </div>
+                             ) : line.trim() ? (
+                               <p className="mb-3">{line}</p>
+                             ) : null}
+                           </div>
+                         ))}
+                       </div>
+                     </div>
+                   </CardContent>
                 </Card>
               ))}
             </TabsContent>
@@ -955,26 +970,28 @@ Best Practices
                 <h3 className="text-lg font-semibold">Study Flashcards</h3>
                 <Badge variant="secondary">{mockFlashcards.length} Cards</Badge>
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {mockFlashcards.map((card, index) => (
-                  <Card key={index} className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-card to-accent/10 border-2 border-border/50 hover:border-primary/30">
-                    <CardContent className="p-6">
-                      <div className="text-center space-y-4">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-center gap-2">
-                            <Badge variant="secondary" className="text-xs font-medium">
-                              {card.category}
-                            </Badge>
-                          </div>
-                          <div className="bg-primary/5 rounded-lg p-4 border">
-                            <Badge variant="outline" className="mb-3 text-xs">Term</Badge>
-                            <p className="font-semibold text-lg text-foreground">{card.front}</p>
+                  <Card key={index} className="group cursor-pointer hover:shadow-md transition-all duration-300 bg-gradient-to-br from-card to-accent/5 border border-border/50 hover:border-primary/40">
+                    <CardContent className="p-5">
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <Badge variant="secondary" className="text-xs font-medium mb-3">
+                            {card.category}
+                          </Badge>
+                        </div>
+                        
+                        <div className="bg-primary/5 rounded-lg p-4 border min-h-[80px] flex items-center justify-center">
+                          <div className="text-center">
+                            <Badge variant="outline" className="mb-2 text-xs">Question</Badge>
+                            <p className="font-semibold text-base text-foreground leading-tight">{card.front}</p>
                           </div>
                         </div>
-                        <div className="border-t-2 border-dashed border-border/50 pt-4">
-                          <div className="bg-accent/20 rounded-lg p-4 border">
-                            <Badge variant="outline" className="mb-3 text-xs">Definition</Badge>
-                            <p className="text-sm text-muted-foreground leading-relaxed">{card.back}</p>
+                        
+                        <div className="bg-accent/10 rounded-lg p-4 border min-h-[100px] flex items-center">
+                          <div className="w-full">
+                            <Badge variant="outline" className="mb-2 text-xs">Answer</Badge>
+                            <p className="text-sm text-muted-foreground leading-relaxed text-left">{card.back}</p>
                           </div>
                         </div>
                       </div>

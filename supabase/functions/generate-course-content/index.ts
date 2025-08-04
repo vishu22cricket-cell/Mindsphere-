@@ -21,47 +21,81 @@ serve(async (req) => {
     }
 
     // Generate comprehensive course content based on input
-    const systemPrompt = `You are an expert educational content creator. Generate comprehensive, detailed, and practical course content including notes, quizzes, and flashcards. Make the content professional, actionable, and suitable for adult learners. Focus on practical applications and real-world examples.`;
+    const systemPrompt = `You are an expert educational content creator. Generate clear, simple, and well-structured course content. Make notes easy to read with each key point on a new line. Create practical flashcards with concise definitions. Focus on clarity and comprehension.`;
 
     let userPrompt = '';
     if (sourceType === 'youtube') {
       userPrompt = `Based on this YouTube video: "${content}", create a comprehensive course titled "${title}". Generate:
 
-1. DETAILED NOTES (3 sections, each 400+ words):
-   - Core concepts with deep explanations
-   - Implementation strategies with step-by-step guidance  
-   - Advanced insights with practical applications
+1. DETAILED NOTES (3 sections):
+   ### Section 1 Title
+   - Key point 1
+   - Key point 2
+   - Key point 3
+   
+   ### Section 2 Title
+   - Key point 1
+   - Key point 2
+   - Key point 3
+   
+   ### Section 3 Title
+   - Key point 1
+   - Key point 2
+   - Key point 3
 
 2. CHALLENGING QUIZZES (5 questions):
-   - Multiple choice questions testing comprehension
-   - Include detailed explanations for correct answers
-   - Cover beginner to advanced concepts
+   **Question 1:** [Question text]
+   a) Option 1
+   b) Option 2
+   c) Option 3
+   d) Option 4
+   **Correct:** a
+   **Explanation:** [Brief explanation]
 
 3. FLASHCARDS (6 cards):
-   - Key concepts and definitions
-   - Important formulas or frameworks
-   - Practical tips and best practices
+   **Front:** [Term or concept]
+   **Back:** [Simple, clear definition or explanation]
+   
+   **Front:** [Term or concept]
+   **Back:** [Simple, clear definition or explanation]
 
-Make the content professional, comprehensive, and immediately applicable. Include specific examples, case studies, and actionable insights.`;
+Format each note section with bullet points. Keep flashcard definitions concise and clear. Make quiz explanations brief but helpful.`;
     } else {
       userPrompt = `Based on this PDF document: "${content}", create a comprehensive course titled "${title}". Generate:
 
-1. DETAILED NOTES (3 sections, each 400+ words):
-   - Core concepts from the document with deep analysis
-   - Practical implementation guidelines
-   - Advanced applications and case studies
+1. DETAILED NOTES (3 sections):
+   ### Section 1 Title
+   - Key point 1
+   - Key point 2
+   - Key point 3
+   
+   ### Section 2 Title
+   - Key point 1
+   - Key point 2
+   - Key point 3
+   
+   ### Section 3 Title
+   - Key point 1
+   - Key point 2
+   - Key point 3
 
 2. CHALLENGING QUIZZES (5 questions):
-   - Multiple choice questions testing document comprehension
-   - Include detailed explanations for correct answers
-   - Progressive difficulty from basic to advanced
+   **Question 1:** [Question text]
+   a) Option 1
+   b) Option 2
+   c) Option 3
+   d) Option 4
+   **Correct:** a
+   **Explanation:** [Brief explanation]
 
 3. FLASHCARDS (6 cards):
-   - Key terminology and definitions from the document
-   - Important frameworks or methodologies
-   - Critical insights and takeaways
+   **Front:** [Term or concept]
+   **Back:** [Simple, clear definition or explanation]
+   
+   **Front:** [Term or concept]
+   **Back:** [Simple, clear definition or explanation]
 
-Make the content professional, comprehensive, and immediately applicable. Extract the most valuable insights and present them in an engaging, educational format.`;
+Format each note section with bullet points. Keep flashcard definitions concise and clear. Make quiz explanations brief but helpful.`;
     }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -71,7 +105,7 @@ Make the content professional, comprehensive, and immediately applicable. Extrac
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4.1-2025-04-14',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -103,7 +137,15 @@ Make the content professional, comprehensive, and immediately applicable. Extrac
           if (noteMatches) {
             noteMatches.forEach(match => {
               const [, title] = match.match(/### (.+?)\n/) || [];
-              const content = match.replace(/### .+?\n/, '').trim();
+              let content = match.replace(/### .+?\n/, '').trim();
+              
+              // Format content for better readability - convert bullet points to proper format
+              content = content
+                .replace(/^-\s+/gm, '• ')  // Convert - to bullet points
+                .replace(/^\*\s+/gm, '• ') // Convert * to bullet points
+                .replace(/\n\n+/g, '\n\n') // Clean up extra line breaks
+                .trim();
+              
               if (title && content) {
                 notes.push({
                   title,
@@ -141,14 +183,23 @@ Make the content professional, comprehensive, and immediately applicable. Extrac
           const cardMatches = section.match(/\*\*Front:\*\*(.+?)\*\*Back:\*\*(.+?)(?=\*\*Front:|$)/gs);
           if (cardMatches) {
             cardMatches.forEach(match => {
-              const frontMatch = match.match(/\*\*Front:\*\*\s*(.+?)\n/);
-              const backMatch = match.match(/\*\*Back:\*\*\s*([\s\S]+?)(?=\n\n|$)/);
+              const frontMatch = match.match(/\*\*Front:\*\*\s*(.+?)(?:\n|\*\*Back)/);
+              const backMatch = match.match(/\*\*Back:\*\*\s*([\s\S]+?)(?=\n\n|\*\*Front:|$)/);
               
               if (frontMatch && backMatch) {
+                const front = frontMatch[1].trim();
+                let back = backMatch[1].trim();
+                
+                // Clean up the back content - remove extra formatting and keep it concise
+                back = back
+                  .replace(/\n+/g, ' ')  // Replace line breaks with spaces
+                  .replace(/\s+/g, ' ')  // Clean up multiple spaces
+                  .trim();
+                
                 flashcards.push({
-                  front: frontMatch[1].trim(),
-                  back: backMatch[1].trim(),
-                  category: "Generated Content"
+                  front,
+                  back,
+                  category: "Key Concepts"
                 });
               }
             });
