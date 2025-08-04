@@ -45,8 +45,11 @@ const CallToAction = () => {
                 <Button 
                   size="lg" 
                   className="bg-white text-primary hover:bg-white/90 hover:scale-105 transition-all duration-300 shadow-elegant px-8 py-4 text-lg font-semibold"
+                  onClick={() => {
+                    document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                 >
-                  Start Learning for Free
+                  Start Creating Now
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 
@@ -54,8 +57,11 @@ const CallToAction = () => {
                   variant="outline" 
                   size="lg"
                   className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 px-8 py-4 text-lg"
+                  onClick={() => {
+                    window.open('https://youtube.com/watch?v=demo', '_blank');
+                  }}
                 >
-                  Watch Demo
+                  View Examples
                 </Button>
               </div>
 
