@@ -28,6 +28,15 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent, gener
   const { toast } = useToast();
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState<Record<number, boolean>>({});
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [quizPerformance, setQuizPerformance] = useState({
+    totalQuestions: 0,
+    correctAnswers: 0,
+    score: 0,
+    timeSpent: "0 minutes",
+    strengths: [] as string[],
+    improvementAreas: [] as string[]
+  });
   const [chatMessages, setChatMessages] = useState([
     {
       id: 1,
@@ -119,6 +128,41 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent, gener
   const handleQuizAnswer = (quizIndex: number, selectedOption: number) => {
     setQuizAnswers(prev => ({ ...prev, [quizIndex]: selectedOption }));
     setShowResults(prev => ({ ...prev, [quizIndex]: true }));
+  };
+
+  const handleSubmitQuiz = () => {
+    const quizzes = getCourseContent().quizzes;
+    let correctCount = 0;
+    const strengths: string[] = [];
+    const improvementAreas: string[] = [];
+
+    quizzes.forEach((quiz, index) => {
+      const userAnswer = quizAnswers[index];
+      if (userAnswer === quiz.correctAnswer) {
+        correctCount++;
+        strengths.push(quiz.topic || `Question ${index + 1}`);
+      } else {
+        improvementAreas.push(quiz.topic || `Question ${index + 1}`);
+      }
+    });
+
+    const score = Math.round((correctCount / quizzes.length) * 100);
+    
+    setQuizPerformance({
+      totalQuestions: quizzes.length,
+      correctAnswers: correctCount,
+      score,
+      timeSpent: "5 minutes", // This would be calculated in a real app
+      strengths,
+      improvementAreas
+    });
+    
+    setQuizSubmitted(true);
+    
+    toast({
+      title: "Quiz Completed!",
+      description: `You scored ${score}% (${correctCount}/${quizzes.length} correct)`,
+    });
   };
 
   // Use AI-generated content if available, otherwise fall back to generated content
@@ -711,7 +755,7 @@ Best Practices
                 <h3 className="text-lg font-semibold">Interactive Quizzes</h3>
                 <Badge variant="secondary">{mockQuizzes.length} Questions</Badge>
               </div>
-              {mockQuizzes.map((quiz, index) => (
+              {!quizSubmitted && mockQuizzes.map((quiz, index) => (
                 <Card key={index} className="border border-border/50">
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -792,6 +836,118 @@ Best Practices
                   </CardContent>
                 </Card>
               ))}
+              
+              {!quizSubmitted && Object.keys(quizAnswers).length === mockQuizzes.length && (
+                <div className="mt-6 flex justify-center">
+                  <Button variant="hero" size="lg" onClick={handleSubmitQuiz}>
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Submit Quiz
+                  </Button>
+                </div>
+              )}
+
+              {quizSubmitted && (
+                <div className="mt-6 space-y-6">
+                  {/* Quiz Results Summary */}
+                  <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/10">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-xl">
+                        <CheckCircle className="w-6 h-6 text-green-500" />
+                        Quiz Results
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div className="text-center p-4 bg-background rounded-lg border">
+                          <div className="text-3xl font-bold text-primary mb-1">{quizPerformance.score}%</div>
+                          <div className="text-sm text-muted-foreground">Overall Score</div>
+                        </div>
+                        <div className="text-center p-4 bg-background rounded-lg border">
+                          <div className="text-3xl font-bold text-green-600 mb-1">{quizPerformance.correctAnswers}</div>
+                          <div className="text-sm text-muted-foreground">Correct Answers</div>
+                        </div>
+                        <div className="text-center p-4 bg-background rounded-lg border">
+                          <div className="text-3xl font-bold text-blue-600 mb-1">{quizPerformance.totalQuestions}</div>
+                          <div className="text-sm text-muted-foreground">Total Questions</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Performance Analysis */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Star className="w-5 h-5 text-yellow-500" />
+                        Performance Analysis
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <h4 className="font-semibold text-green-600 flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4" />
+                            Strengths
+                          </h4>
+                          {quizPerformance.strengths.length > 0 ? (
+                            <ul className="space-y-1">
+                              {quizPerformance.strengths.map((strength, index) => (
+                                <li key={index} className="text-sm text-muted-foreground flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                  {strength}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-sm text-muted-foreground">Focus on understanding the core concepts</p>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <h4 className="font-semibold text-orange-600 flex items-center gap-2">
+                            <Brain className="w-4 h-4" />
+                            Areas for Improvement
+                          </h4>
+                          {quizPerformance.improvementAreas.length > 0 ? (
+                            <ul className="space-y-1">
+                              {quizPerformance.improvementAreas.map((area, index) => (
+                                <li key={index} className="text-sm text-muted-foreground flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                  {area}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-sm text-muted-foreground">Excellent! All topics mastered</p>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="pt-4 border-t">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Time Spent:</span>
+                          <span className="font-medium">{quizPerformance.timeSpent}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Retake Quiz Button */}
+                  <div className="flex justify-center">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setQuizSubmitted(false);
+                        setQuizAnswers({});
+                        setShowResults({});
+                      }}
+                    >
+                      <Brain className="w-4 h-4 mr-2" />
+                      Retake Quiz
+                    </Button>
+                  </div>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="flashcards" className="space-y-4 mt-6">
