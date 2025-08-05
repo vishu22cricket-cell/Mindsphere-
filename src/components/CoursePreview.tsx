@@ -112,9 +112,29 @@ const CoursePreview = ({ isVisible, courseTitle, sourceType, inputContent, gener
   };
 
   const handleExportCourse = () => {
+    const courseData = {
+      title: courseTitle,
+      notes: courseContent.notes,
+      quizzes: courseContent.quizzes,
+      flashcards: courseContent.flashcards,
+      exportDate: new Date().toISOString(),
+    };
+
+    const dataStr = JSON.stringify(courseData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${courseTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
     toast({
-      title: "Course Export Started",
-      description: "Your complete course is being prepared for download...",
+      title: "Course Exported",
+      description: "Your course has been downloaded as a JSON file.",
     });
   };
 

@@ -52,14 +52,17 @@ serve(async (req) => {
    **Correct:** a
    **Explanation:** [Brief explanation]
 
-3. FLASHCARDS (6 cards):
-   **Front:** [Term or concept]
-   **Back:** [Simple, clear definition or explanation]
+3. FLASHCARDS (8 practical cards):
+   **Front:** [Key term, concept, or question]
+   **Back:** [One-sentence clear explanation or answer]
    
-   **Front:** [Term or concept]
-   **Back:** [Simple, clear definition or explanation]
+   **Front:** [Important process or method]
+   **Back:** [Step-by-step summary in 2-3 lines max]
 
-Format each note section with bullet points. Keep flashcard definitions concise and clear. Make quiz explanations brief but helpful.`;
+   **Front:** [Practical application]
+   **Back:** [Real-world example or use case]
+
+Create flashcards that test understanding, not just memorization. Each back should be 1-2 sentences maximum. Focus on the most important concepts that learners need to remember.`;
     } else {
       userPrompt = `Based on this PDF document: "${content}", create a comprehensive course titled "${title}". Generate:
 
@@ -88,14 +91,17 @@ Format each note section with bullet points. Keep flashcard definitions concise 
    **Correct:** a
    **Explanation:** [Brief explanation]
 
-3. FLASHCARDS (6 cards):
-   **Front:** [Term or concept]
-   **Back:** [Simple, clear definition or explanation]
+3. FLASHCARDS (8 practical cards):
+   **Front:** [Key term, concept, or question]
+   **Back:** [One-sentence clear explanation or answer]
    
-   **Front:** [Term or concept]
-   **Back:** [Simple, clear definition or explanation]
+   **Front:** [Important process or method]
+   **Back:** [Step-by-step summary in 2-3 lines max]
 
-Format each note section with bullet points. Keep flashcard definitions concise and clear. Make quiz explanations brief but helpful.`;
+   **Front:** [Practical application]
+   **Back:** [Real-world example or use case]
+
+Create flashcards that test understanding, not just memorization. Each back should be 1-2 sentences maximum. Focus on the most important concepts that learners need to remember.`;
     }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -105,7 +111,7 @@ Format each note section with bullet points. Keep flashcard definitions concise 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }

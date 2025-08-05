@@ -10,8 +10,10 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
 const Auth = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [signUpEmail, setSignUpEmail] = useState('');
+  const [signUpPassword, setSignUpPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { signInWithEmail, signUpWithEmail, signInWithGoogle, user } = useAuth();
   const { toast } = useToast();
@@ -24,6 +26,9 @@ const Auth = () => {
   }, [user, navigate]);
 
   const handleEmailAuth = async (isSignUp: boolean) => {
+    const email = isSignUp ? signUpEmail : signInEmail;
+    const password = isSignUp ? signUpPassword : signInPassword;
+    
     if (!email || !password) {
       toast({
         title: "Error",
@@ -107,8 +112,8 @@ const Auth = () => {
                       id="signin-email"
                       type="email"
                       placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={signInEmail}
+                      onChange={(e) => setSignInEmail(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
@@ -117,8 +122,8 @@ const Auth = () => {
                       id="signin-password"
                       type="password"
                       placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      value={signInPassword}
+                      onChange={(e) => setSignInPassword(e.target.value)}
                     />
                   </div>
                   <Button 
@@ -140,8 +145,8 @@ const Auth = () => {
                       id="signup-email"
                       type="email"
                       placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={signUpEmail}
+                      onChange={(e) => setSignUpEmail(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
@@ -150,8 +155,8 @@ const Auth = () => {
                       id="signup-password"
                       type="password"
                       placeholder="Create a password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      value={signUpPassword}
+                      onChange={(e) => setSignUpPassword(e.target.value)}
                     />
                   </div>
                   <Button 
