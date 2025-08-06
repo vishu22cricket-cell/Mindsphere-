@@ -20,7 +20,7 @@ import {
 interface CoursePreviewProps {
   isVisible: boolean;
   courseTitle: string;
-  sourceType: "youtube" | "pdf";
+  sourceType: "youtube" | "pdf" | "text" | "web" | "audio";
   inputContent?: string; // URL or file name
   generatedContent?: any; // AI-generated content
 }
@@ -647,7 +647,7 @@ Best Practices
       }
     };
     
-    return sourceType === 'youtube' ? content.youtube : content.pdf;
+    return sourceType === 'youtube' ? content.youtube : sourceType === 'pdf' ? content.pdf : content.youtube;
   }
 
   const content = getCourseContent();
@@ -665,7 +665,10 @@ Best Practices
               Course Generated Successfully!
             </CardTitle>
             <Badge variant="secondary" className="bg-green-100 text-green-700">
-              {sourceType === "youtube" ? "YouTube" : "PDF"} Content
+              {sourceType === "youtube" ? "YouTube" : 
+               sourceType === "pdf" ? "PDF" : 
+               sourceType === "text" ? "Text" : 
+               sourceType === "web" ? "Web" : "Audio"} Content
             </Badge>
           </div>
           <p className="text-muted-foreground">
