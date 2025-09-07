@@ -61,7 +61,6 @@ const Navigation = () => {
     { label: "How it Works", href: "#how-it-works" },
     { label: "Explore", href: "/explore" },
     { label: "Pricing", href: "#pricing" },
-    { label: "Dashboard", href: "/dashboard" },
   ];
 
   return (
@@ -77,14 +76,21 @@ const Navigation = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {navItems.map((item) => {
               if (item.href.startsWith('#')) {
                 return (
                   <a
                     key={item.label}
                     href={item.href}
-                    className="text-foreground hover:text-primary transition-colors font-medium"
+                    className="text-foreground hover:text-primary transition-colors font-medium px-2 py-1 rounded-md hover:bg-accent/50"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const element = document.querySelector(item.href);
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
                   >
                     {item.label}
                   </a>
@@ -94,7 +100,7 @@ const Navigation = () => {
                   <Link
                     key={item.label}
                     to={item.href}
-                    className="text-foreground hover:text-primary transition-colors font-medium"
+                    className="text-foreground hover:text-primary transition-colors font-medium px-2 py-1 rounded-md hover:bg-accent/50"
                   >
                     {item.label}
                   </Link>
@@ -104,7 +110,7 @@ const Navigation = () => {
           </div>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
@@ -116,20 +122,24 @@ const Navigation = () => {
             {user ? (
               <>
                 <Link to="/profile">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-md hover:bg-muted/80 transition-colors cursor-pointer">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg hover:bg-muted/80 transition-colors cursor-pointer">
                     <User className="w-4 h-4" />
                     <span className="text-sm font-medium">{getDisplayName()}</span>
                   </div>
                 </Link>
-                <Button variant="ghost" onClick={handleSignOut}>
+                <Button variant="ghost" onClick={handleSignOut} className="gap-2">
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out
                 </Button>
               </>
             ) : (
               <>
-                <Button variant="ghost" onClick={handleSignIn}>Sign In</Button>
-                <Button variant="hero" onClick={handleGetStarted}>Get Started</Button>
+                <Button variant="ghost" onClick={handleSignIn} className="px-4">
+                  Sign In
+                </Button>
+                <Button variant="hero" onClick={handleGetStarted} className="px-6">
+                  Get Started
+                </Button>
               </>
             )}
           </div>
@@ -155,8 +165,15 @@ const Navigation = () => {
                     <a
                       key={item.label}
                       href={item.href}
-                      className="block px-4 py-2 text-foreground hover:text-primary transition-colors font-medium"
-                      onClick={() => setIsMenuOpen(false)}
+                      className="block px-4 py-3 text-foreground hover:text-primary hover:bg-accent/50 transition-colors font-medium rounded-md"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsMenuOpen(false);
+                        const element = document.querySelector(item.href);
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }}
                     >
                       {item.label}
                     </a>
@@ -166,7 +183,7 @@ const Navigation = () => {
                     <Link
                       key={item.label}
                       to={item.href}
-                      className="block px-4 py-2 text-foreground hover:text-primary transition-colors font-medium"
+                      className="block px-4 py-3 text-foreground hover:text-primary hover:bg-accent/50 transition-colors font-medium rounded-md"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {item.label}
@@ -174,31 +191,36 @@ const Navigation = () => {
                   );
                 }
               })}
-              <div className="px-4 pt-4 space-y-2">
+              <div className="px-4 pt-4 space-y-3 border-t border-border/30 mt-4">
                 <Button
                   variant="ghost"
                   onClick={toggleFullscreen}
-                  className="w-full"
+                  className="w-full justify-start gap-2"
                 >
+                  {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
                   {isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
                 </Button>
                 {user ? (
                   <>
                     <Link to="/profile" onClick={() => setIsMenuOpen(false)}>
-                      <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-md hover:bg-muted/80 transition-colors cursor-pointer">
+                      <div className="flex items-center gap-2 px-3 py-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors cursor-pointer w-full">
                         <User className="w-4 h-4" />
                         <span className="text-sm font-medium">{getDisplayName()}</span>
                       </div>
                     </Link>
-                    <Button variant="ghost" className="w-full" onClick={handleSignOut}>
+                    <Button variant="ghost" className="w-full justify-start gap-2" onClick={handleSignOut}>
                       <LogOut className="w-4 h-4 mr-2" />
                       Sign Out
                     </Button>
                   </>
                 ) : (
                   <>
-                    <Button variant="ghost" className="w-full" onClick={handleSignIn}>Sign In</Button>
-                    <Button variant="hero" className="w-full" onClick={handleGetStarted}>Get Started</Button>
+                    <Button variant="ghost" className="w-full justify-start" onClick={handleSignIn}>
+                      Sign In
+                    </Button>
+                    <Button variant="hero" className="w-full justify-start" onClick={handleGetStarted}>
+                      Get Started
+                    </Button>
                   </>
                 )}
               </div>
